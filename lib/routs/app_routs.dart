@@ -19,7 +19,7 @@ class AppRoutes {
 
       case medication:
         return MaterialPageRoute(
-          builder: (_) => const MedicationPage(),
+          builder: (_) => const MedicationListScreen(),
           settings: settings,
         );
 
