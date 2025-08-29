@@ -29,5 +29,11 @@
   "24 Hour": "24 Hour",
   "15 min": "15 min",
   "30 min": "30 min",
-  "40 min": "40 min"
+  "40 min": "40 min",
+  "my_friend": "My Friend",
+  "prayer_times": "Prayer Times",
+  "after_prayer_times": "After Prayer Times",
+  "medication": "Medication",
+  "medication_page_coming_soon": "Medication page coming soon",
+  "home": "Home"
 }

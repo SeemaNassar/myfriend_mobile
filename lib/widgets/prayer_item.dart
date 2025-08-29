@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
 
 enum PrayerItemShape {
-  normal, // No border (default)
-  bottomBorder, // Bottom border only
+  normal,
+  bottomBorder,
 }
 
 class PrayerItem extends StatelessWidget {
