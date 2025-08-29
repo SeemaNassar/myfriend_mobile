@@ -1,8 +1,9 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:myfriend_mobile/routs/app_routs.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
-import 'package:myfriend_mobile/screens/settings_page.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
+import 'package:myfriend_mobile/screens/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,13 +18,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final LanguageService _languageService = LanguageService();
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _languageService.addListener(_onLanguageChanged);
-    // Load default language
-    _loadInitialLanguage();
+    _initializeApp();
   }
 
   @override
@@ -33,15 +35,48 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onLanguageChanged() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  Future<void> _loadInitialLanguage() async {
-    await _languageService.loadLanguage('en');
+  Future<void> _initializeApp() async {
+    try {
+      await _prayerSettingsService.initialize();
+
+      final savedLanguage = await _languageService.getSavedLanguage();
+      await _languageService.loadLanguage(savedLanguage);
+
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print('Error initializing app: $e');
+      // Fallback to English
+      await _languageService.loadLanguage('en');
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Container(
+            color: const Color(0xFFF5F5DC),
+            child: const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF4A7C59),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return MaterialApp(
       title: 'MyFriend Mobile',
       debugShowCheckedModeBanner: false,
@@ -68,7 +103,8 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: const Color(0xFFF5F5DC),
         fontFamily: 'Roboto',
       ),
-      home: const PrayerSettingsPage(),
+      home: const MainScreen(),
+      onGenerateRoute: AppRoutes.generateRoute,
     );
   }
 }

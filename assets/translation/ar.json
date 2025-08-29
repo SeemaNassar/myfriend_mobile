@@ -29,5 +29,12 @@
   "24 Hour": "24 ساعة",
   "15 min": "15 دقيقة",
   "30 min": "30 دقيقة",
-  "40 min": "40 دقيقة"
+  "40 min": "40 دقيقة",
+  "prayer_times": "أوقات الصلاة",
+  "after_prayer_times": "بعد أوقات الصلاة",
+  "my_friend": "صديقي",
+  "medication": "الدواء",
+  "medication_page_coming_soon": "صفحة الدواء قريباً",
+  "home": "الرئيسية"
+  
 }

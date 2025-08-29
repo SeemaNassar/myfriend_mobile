@@ -1,10 +1,10 @@
-//lib\screens\settings_page.dart
 import 'package:flutter/material.dart';
+import 'package:myfriend_mobile/services/language_service.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
 import 'package:myfriend_mobile/widgets/page_box.dart';
 import 'package:myfriend_mobile/widgets/prayer_item.dart';
 import 'package:myfriend_mobile/widgets/custom_switch.dart';
 import 'package:myfriend_mobile/widgets/selection_button.dart';
-import 'package:myfriend_mobile/services/language_service.dart';
 
 class PrayerSettingsPage extends StatefulWidget {
   const PrayerSettingsPage({Key? key}) : super(key: key);
@@ -15,71 +15,36 @@ class PrayerSettingsPage extends StatefulWidget {
 
 class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   final LanguageService _languageService = LanguageService();
-
-  Map<String, bool> prayerStates = {
-    'fajr': true,
-    'dhuhr': false,
-    'asr': false,
-    'maghrib': false,
-    'isha': true,
-  };
-
-  String selectedAlertSound = 'Default';
-  String selectedFontSize = 'Medium';
-  String selectedLanguage = 'English';
-  String selectedCountry = 'المملكة العربية السعودية';
-  bool notificationsEnabled = true;
-  String selectedTimeFormat = '24 Hour';
-  String selectedReminderTime = '15 min';
-
-  final List<String> alertSounds = ['Default', 'Adhan', 'Bell', 'Chime'];
-
-  final List<String> fontSizes = ['Small', 'Medium', 'Large'];
-
-  final List<String> timeFormats = ['12 Hour', '24 Hour'];
-
-  final List<String> reminderTimes = ['15 min', '30 min', '40 min'];
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
 
   @override
   void initState() {
     super.initState();
     _languageService.addListener(_onLanguageChanged);
-    _loadInitialLanguage();
+    _prayerSettingsService.addListener(_onSettingsChanged);
   }
 
   @override
   void dispose() {
     _languageService.removeListener(_onLanguageChanged);
+    _prayerSettingsService.removeListener(_onSettingsChanged);
     super.dispose();
   }
 
   void _onLanguageChanged() {
-    setState(() {
-      selectedLanguage = _languageService.currentLocale.languageCode == 'en'
-          ? 'English'
-          : 'العربية';
-    });
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  Future<void> _loadInitialLanguage() async {
-    await _languageService.loadLanguage('en');
-  }
-
-  void togglePrayer(String prayerName, bool value) {
-    setState(() {
-      prayerStates[prayerName] = value;
-    });
-    print('$prayerName reminder ${value ? 'enabled' : 'disabled'}');
+  void _onSettingsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _changeLanguage(String languageCode) async {
     await _languageService.changeLanguage(languageCode);
-  }
-
-  void _toggleLanguage() {
-    final newLang =
-        _languageService.currentLocale.languageCode == 'en' ? 'ar' : 'en';
-    _changeLanguage(newLang);
   }
 
   @override
@@ -102,9 +67,9 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
           ),
           title: Text(
             'settings'.tr,
-            style: const TextStyle(
-              color: Color(0xFF4A7C59),
-              fontSize: 24,
+            style: TextStyle(
+              color: const Color(0xFF4A7C59),
+              fontSize: _getFontSize() + 6,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -118,20 +83,20 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                 title: 'prayer_reminder',
                 backgroundColor: Colors.white,
                 backgroundEndColor: const Color(0xFFF5F5DC),
-                children: prayerStates.entries
+                children: _prayerSettingsService.prayerStates.entries
                     .map((entry) => PrayerItem(
                           leftWidget: Text(
                             entry.key.tr,
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: _getFontSize(),
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF8B4513),
+                              color: const Color(0xFF8B4513),
                             ),
                           ),
                           rightWidget: CustomSwitch(
                             initialValue: entry.value,
-                            onChanged: (value) =>
-                                togglePrayer(entry.key, value),
+                            onChanged: (value) => _prayerSettingsService
+                                .togglePrayer(entry.key, value),
                             activeColor: const Color(0xFF4A7C59),
                             inactiveColor: const Color(0xFFE0E0E0),
                           ),
@@ -152,10 +117,10 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             horizontal: 20.0, vertical: 12.0),
                         child: Text(
                           'time_format'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: _getFontSize(),
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF8B4513),
+                            color: const Color(0xFF8B4513),
                           ),
                         ),
                       ),
@@ -166,11 +131,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: '12 Hour',
-                                isSelected: selectedTimeFormat == '12 Hour',
+                                isSelected:
+                                    _prayerSettingsService.selectedTimeFormat ==
+                                        '12 Hour',
                                 onTap: () {
-                                  setState(() {
-                                    selectedTimeFormat = '12 Hour';
-                                  });
+                                  _prayerSettingsService
+                                      .setTimeFormat('12 Hour');
                                 },
                               ),
                             ),
@@ -178,11 +144,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: '24 Hour',
-                                isSelected: selectedTimeFormat == '24 Hour',
+                                isSelected:
+                                    _prayerSettingsService.selectedTimeFormat ==
+                                        '24 Hour',
                                 onTap: () {
-                                  setState(() {
-                                    selectedTimeFormat = '24 Hour';
-                                  });
+                                  _prayerSettingsService
+                                      .setTimeFormat('24 Hour');
                                 },
                               ),
                             ),
@@ -200,10 +167,10 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             horizontal: 20.0, vertical: 12.0),
                         child: Text(
                           'reminder_time_after_prayer'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: _getFontSize(),
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF8B4513),
+                            color: const Color(0xFF8B4513),
                           ),
                         ),
                       ),
@@ -214,11 +181,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: '15 min',
-                                isSelected: selectedReminderTime == '15 min',
+                                isSelected: _prayerSettingsService
+                                        .selectedReminderTime ==
+                                    '15 min',
                                 onTap: () {
-                                  setState(() {
-                                    selectedReminderTime = '15 min';
-                                  });
+                                  _prayerSettingsService
+                                      .setReminderTime('15 min');
                                 },
                               ),
                             ),
@@ -226,11 +194,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: '30 min',
-                                isSelected: selectedReminderTime == '30 min',
+                                isSelected: _prayerSettingsService
+                                        .selectedReminderTime ==
+                                    '30 min',
                                 onTap: () {
-                                  setState(() {
-                                    selectedReminderTime = '30 min';
-                                  });
+                                  _prayerSettingsService
+                                      .setReminderTime('30 min');
                                 },
                               ),
                             ),
@@ -238,11 +207,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: '40 min',
-                                isSelected: selectedReminderTime == '40 min',
+                                isSelected: _prayerSettingsService
+                                        .selectedReminderTime ==
+                                    '40 min',
                                 onTap: () {
-                                  setState(() {
-                                    selectedReminderTime = '40 min';
-                                  });
+                                  _prayerSettingsService
+                                      .setReminderTime('40 min');
                                 },
                               ),
                             ),
@@ -260,10 +230,10 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             horizontal: 20.0, vertical: 12.0),
                         child: Text(
                           'alert_sound'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: _getFontSize(),
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF8B4513),
+                            color: const Color(0xFF8B4513),
                           ),
                         ),
                       ),
@@ -276,11 +246,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 Expanded(
                                   child: SelectionButton(
                                     text: 'Default',
-                                    isSelected: selectedAlertSound == 'Default',
+                                    isSelected: _prayerSettingsService
+                                            .selectedAlertSound ==
+                                        'Default',
                                     onTap: () {
-                                      setState(() {
-                                        selectedAlertSound = 'Default';
-                                      });
+                                      _prayerSettingsService
+                                          .setAlertSound('Default');
                                     },
                                   ),
                                 ),
@@ -288,11 +259,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 Expanded(
                                   child: SelectionButton(
                                     text: 'Adhan',
-                                    isSelected: selectedAlertSound == 'Adhan',
+                                    isSelected: _prayerSettingsService
+                                            .selectedAlertSound ==
+                                        'Adhan',
                                     onTap: () {
-                                      setState(() {
-                                        selectedAlertSound = 'Adhan';
-                                      });
+                                      _prayerSettingsService
+                                          .setAlertSound('Adhan');
                                     },
                                   ),
                                 ),
@@ -304,11 +276,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 Expanded(
                                   child: SelectionButton(
                                     text: 'Bell',
-                                    isSelected: selectedAlertSound == 'Bell',
+                                    isSelected: _prayerSettingsService
+                                            .selectedAlertSound ==
+                                        'Bell',
                                     onTap: () {
-                                      setState(() {
-                                        selectedAlertSound = 'Bell';
-                                      });
+                                      _prayerSettingsService
+                                          .setAlertSound('Bell');
                                     },
                                   ),
                                 ),
@@ -316,11 +289,12 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 Expanded(
                                   child: SelectionButton(
                                     text: 'Chime',
-                                    isSelected: selectedAlertSound == 'Chime',
+                                    isSelected: _prayerSettingsService
+                                            .selectedAlertSound ==
+                                        'Chime',
                                     onTap: () {
-                                      setState(() {
-                                        selectedAlertSound = 'Chime';
-                                      });
+                                      _prayerSettingsService
+                                          .setAlertSound('Chime');
                                     },
                                   ),
                                 ),
@@ -340,10 +314,10 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             horizontal: 20.0, vertical: 12.0),
                         child: Text(
                           'font_size'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: _getFontSize(),
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF8B4513),
+                            color: const Color(0xFF8B4513),
                           ),
                         ),
                       ),
@@ -354,11 +328,11 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: 'Small',
-                                isSelected: selectedFontSize == 'Small',
+                                isSelected:
+                                    _prayerSettingsService.selectedFontSize ==
+                                        'Small',
                                 onTap: () {
-                                  setState(() {
-                                    selectedFontSize = 'Small';
-                                  });
+                                  _prayerSettingsService.setFontSize('Small');
                                 },
                               ),
                             ),
@@ -366,11 +340,11 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: 'Medium',
-                                isSelected: selectedFontSize == 'Medium',
+                                isSelected:
+                                    _prayerSettingsService.selectedFontSize ==
+                                        'Medium',
                                 onTap: () {
-                                  setState(() {
-                                    selectedFontSize = 'Medium';
-                                  });
+                                  _prayerSettingsService.setFontSize('Medium');
                                 },
                               ),
                             ),
@@ -378,11 +352,11 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             Expanded(
                               child: SelectionButton(
                                 text: 'Large',
-                                isSelected: selectedFontSize == 'Large',
+                                isSelected:
+                                    _prayerSettingsService.selectedFontSize ==
+                                        'Large',
                                 onTap: () {
-                                  setState(() {
-                                    selectedFontSize = 'Large';
-                                  });
+                                  _prayerSettingsService.setFontSize('Large');
                                 },
                               ),
                             ),
@@ -408,10 +382,10 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             horizontal: 20.0, vertical: 12.0),
                         child: Text(
                           'language'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: _getFontSize(),
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF8B4513),
+                            color: const Color(0xFF8B4513),
                           ),
                         ),
                       ),
@@ -446,45 +420,17 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                   ),
                   PrayerItem(
                     leftWidget: Text(
-                      'selected_country'.tr,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF8B4513),
-                      ),
-                    ),
-                    rightWidget: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
-                      ),
-                      child: Text(
-                        selectedCountry,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF666666),
-                        ),
-                      ),
-                    ),
-                  ),
-                  PrayerItem(
-                    leftWidget: Text(
                       'notifications'.tr,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: _getFontSize(),
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF8B4513),
+                        color: const Color(0xFF8B4513),
                       ),
                     ),
                     rightWidget: CustomSwitch(
-                      initialValue: notificationsEnabled,
+                      initialValue: _prayerSettingsService.notificationsEnabled,
                       onChanged: (value) {
-                        setState(() {
-                          notificationsEnabled = value;
-                        });
+                        _prayerSettingsService.setNotifications(value);
                       },
                       activeColor: const Color(0xFF4A7C59),
                       inactiveColor: const Color(0xFFE0E0E0),
@@ -498,5 +444,18 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
         ),
       ),
     );
+  }
+
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
   }
 }

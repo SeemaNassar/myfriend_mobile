@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageService extends ChangeNotifier {
   static final LanguageService _instance = LanguageService._internal();
@@ -26,6 +27,10 @@ class LanguageService extends ChangeNotifier {
       _localizedStrings =
           jsonMap.map((key, value) => MapEntry(key, value.toString()));
       _currentLocale = Locale(languageCode);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('selected_language', languageCode);
+
       notifyListeners();
     } catch (e) {
       print('Error loading language $languageCode: $e');
@@ -36,6 +41,11 @@ class LanguageService extends ChangeNotifier {
     if (_currentLocale.languageCode != languageCode) {
       await loadLanguage(languageCode);
     }
+  }
+
+  Future<String> getSavedLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('selected_language') ?? 'en';
   }
 
   TextDirection get textDirection =>
