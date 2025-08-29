@@ -355,7 +355,7 @@ class _HomePageState extends State<HomePage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'reminder1_${_prayerSettingsService.selectedReminderTime}reminder2_'
+                              'reminder_${_prayerSettingsService.selectedReminderTime}'
                                   .tr,
                               style: TextStyle(
                                 fontSize: _getFontSize() - 2,
