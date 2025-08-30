@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/widgets/custom_timw_picker.dart';
 import '../models/medication.dart';
 import '../services/language_service.dart';
+import '../services/prayer_settings_service.dart';
 import '../widgets/custom_switch.dart';
 import '../widgets/selection_button.dart';
 import '../widgets/page_box.dart';
@@ -27,6 +28,7 @@ class MedicationCard extends StatefulWidget {
 class _MedicationCardState extends State<MedicationCard>
     with SingleTickerProviderStateMixin {
   final LanguageService _languageService = LanguageService();
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
   bool _isExpanded = false;
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
@@ -49,6 +51,7 @@ class _MedicationCardState extends State<MedicationCard>
       curve: Curves.easeInOut,
     );
     _languageService.addListener(_onLanguageChanged);
+    _prayerSettingsService.addListener(_onSettingsChanged);
   }
 
   @override
@@ -56,11 +59,29 @@ class _MedicationCardState extends State<MedicationCard>
     _animationController.dispose();
     medicineNameController.dispose();
     _languageService.removeListener(_onLanguageChanged);
+    _prayerSettingsService.removeListener(_onSettingsChanged);
     super.dispose();
   }
 
   void _onLanguageChanged() {
     setState(() {});
+  }
+
+  void _onSettingsChanged() {
+    setState(() {});
+  }
+
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
   }
 
   void _toggleExpansion() {
@@ -168,8 +189,8 @@ class _MedicationCardState extends State<MedicationCard>
                 children: [
                   Text(
                     medication.name,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: _getFontSize(),
                       fontWeight: FontWeight.w500,
                       color: Color(0xFF8B4513),
                     ),
@@ -178,7 +199,7 @@ class _MedicationCardState extends State<MedicationCard>
                   Text(
                     medication.time,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: _getFontSize() - 2,
                       color: Colors.grey[600],
                     ),
                   ),
@@ -201,8 +222,8 @@ class _MedicationCardState extends State<MedicationCard>
                 children: [
                   Text(
                     medication.name,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: _getFontSize(),
                       fontWeight: FontWeight.w500,
                       color: Color(0xFF8B4513),
                     ),
@@ -211,7 +232,7 @@ class _MedicationCardState extends State<MedicationCard>
                   Text(
                     medication.time,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: _getFontSize() - 2,
                       color: Colors.grey[600],
                     ),
                   ),
@@ -239,9 +260,13 @@ class _MedicationCardState extends State<MedicationCard>
             child: TextField(
               controller: medicineNameController,
               textAlign: isRTL ? TextAlign.right : TextAlign.left,
+              style: TextStyle(fontSize: _getFontSize()),
               decoration: InputDecoration(
                 hintText: 'medicine_name'.tr,
-                hintStyle: TextStyle(color: Colors.grey[400]),
+                hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: _getFontSize(),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -260,8 +285,8 @@ class _MedicationCardState extends State<MedicationCard>
           // Reminder type section
           Text(
             'reminder_type'.tr,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: _getFontSize(),
               fontWeight: FontWeight.w600,
               color: Color(0xFF4A7C59),
             ),
@@ -312,8 +337,8 @@ class _MedicationCardState extends State<MedicationCard>
                 child: Text(
                   _formatTimeOfDay(selectedTime),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: _getFontSize(),
                     color: Color(0xFF8B4513),
                   ),
                 ),
@@ -324,8 +349,8 @@ class _MedicationCardState extends State<MedicationCard>
             // Times per day section
             Text(
               'times_per_day'.tr,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: _getFontSize(),
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF4A7C59),
               ),
@@ -386,8 +411,8 @@ class _MedicationCardState extends State<MedicationCard>
             // Hours selection for "every X hours"
             Text(
               'every_how_many_hours'.tr,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: _getFontSize(),
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF4A7C59),
               ),
@@ -491,19 +516,20 @@ class _MedicationCardState extends State<MedicationCard>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'add_medicine'.tr,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF4A7C59),
-                  ),
-                ),
-                const SizedBox(width: 10),
                 const Icon(
                   Icons.add,
                   color: Color(0xFF4A7C59),
                   size: 20,
                 ),
+                const SizedBox(width: 10),
+                Text(
+                  'add_medicine'.tr,
+                  style: TextStyle(
+                    fontSize: _getFontSize(),
+                    color: Color(0xFF4A7C59),
+                  ),
+                ),
+
               ],
             ),
           ),
@@ -531,7 +557,7 @@ class _MedicationCardState extends State<MedicationCard>
               child: Text(
                 'no_medicines_added'.tr,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: _getFontSize(),
                   color: Colors.grey[500],
                 ),
               ),

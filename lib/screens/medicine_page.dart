@@ -4,6 +4,7 @@ import 'package:myfriend_mobile/services/medicine_service.dart';
 import 'package:myfriend_mobile/widgets/midication_card.dart';
 import '../models/medication.dart';
 import '../services/language_service.dart';
+import '../services/prayer_settings_service.dart';
 
 class MedicationListScreen extends StatefulWidget {
   const MedicationListScreen({Key? key}) : super(key: key);
@@ -16,21 +17,28 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
   List<Medication> medications = [];
   final MedicationService _medicationService = MedicationService();
   final LanguageService _languageService = LanguageService();
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
 
   @override
   void initState() {
     super.initState();
     _languageService.addListener(_onLanguageChanged);
+    _prayerSettingsService.addListener(_onSettingsChanged);
     _loadMedications();
   }
 
   @override
   void dispose() {
     _languageService.removeListener(_onLanguageChanged);
+    _prayerSettingsService.removeListener(_onSettingsChanged);
     super.dispose();
   }
 
   void _onLanguageChanged() {
+    setState(() {});
+  }
+
+  void _onSettingsChanged() {
     setState(() {});
   }
 
@@ -52,9 +60,23 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
     setState(() {}); // Trigger rebuild
   }
 
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isRTL = _languageService.isRTL;
+    print('isRTL value: $isRTL');
 
     return Directionality(
       textDirection: _languageService.textDirection,
@@ -72,22 +94,24 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
           ),
           title: Column(
             children: [
+              SizedBox(height: 5),
               Text(
                 'settings'.tr,
                 style: TextStyle(
                   color: Color(0xFF4A7C59),
-                  fontSize: 24,
+                  fontSize: _getFontSize() + 8,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 7),
+              SizedBox(height: 5),
               Text(
                 'medicine_reminder'.tr,
                 style: TextStyle(
                   color: Color(0xFF8B4513),
-                  fontSize: 16,
+                  fontSize: _getFontSize(),
                 ),
               ),
+              SizedBox(height: 5),
             ],
           ),
           centerTitle: true,
@@ -110,54 +134,32 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Order based on language direction
-                          if (isRTL) ...[
-                            Text(
-                              'my_friend'.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF4A7C59),
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF4A7C59),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '🌙',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
-                            SizedBox(width: 10),
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF4A7C59),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Transform.scale(
-                                scaleX: 1, // Keep moon facing right for Arabic
-                                child: Icon(Icons.nightlight_round,
-                                    color: Colors.yellow, size: 24),
-                              ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'صديقي',
+                            style: TextStyle(
+                              fontSize: _getFontSize(),
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF4A7C59),
                             ),
-                          ] else ...[
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF4A7C59),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Transform.scale(
-                                scaleX:
-                                    -1, // Flip moon for English (facing left)
-                                child: Icon(Icons.nightlight_round,
-                                    color: Colors.yellow, size: 24),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              'my_friend'.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF4A7C59),
-                              ),
-                            ),
-                          ],
+                          ),
+
                         ],
+                          
                       ),
                     ],
                   ),
