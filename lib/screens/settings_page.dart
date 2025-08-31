@@ -1,3 +1,4 @@
+// lib/screens/settings_page.dart
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
 import 'package:myfriend_mobile/services/prayer_settings_service.dart';
@@ -9,7 +10,9 @@ import 'package:myfriend_mobile/widgets/custom_switch.dart';
 import 'package:myfriend_mobile/widgets/selection_button.dart';
 
 class PrayerSettingsPage extends StatefulWidget {
-  const PrayerSettingsPage({Key? key}) : super(key: key);
+  final VoidCallback? onBackPressed;
+
+  const PrayerSettingsPage({Key? key, this.onBackPressed}) : super(key: key);
 
   @override
   State<PrayerSettingsPage> createState() => _PrayerSettingsPageState();
@@ -60,13 +63,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
         appBar: AppBar(
           backgroundColor: AppColors.mainBg,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              isRTL ? Icons.arrow_forward : Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          automaticallyImplyLeading: false,
           title: Text(
             'settings'.tr,
             style: _getFontSize() == 14
@@ -160,7 +157,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                           children: [
                             Expanded(
                               child: SelectionButton(
-                                text: '12 Hour',
+                                text: 'time_format_12_hour'.tr,
                                 isSelected:
                                     _prayerSettingsService.selectedTimeFormat ==
                                     '12 Hour',
@@ -174,7 +171,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: '24 Hour',
+                                text: 'time_format_24_hour'.tr,
                                 isSelected:
                                     _prayerSettingsService.selectedTimeFormat ==
                                     '24 Hour',
@@ -223,45 +220,39 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                           children: [
                             Expanded(
                               child: SelectionButton(
-                                text: '15 min',
+                                text: '15',
                                 isSelected:
                                     _prayerSettingsService
                                         .selectedReminderTime ==
-                                    '15 min',
+                                    '15',
                                 onTap: () {
-                                  _prayerSettingsService.setReminderTime(
-                                    '15 min',
-                                  );
+                                  _prayerSettingsService.setReminderTime('15');
                                 },
                               ),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: '30 min',
+                                text: '30',
                                 isSelected:
                                     _prayerSettingsService
                                         .selectedReminderTime ==
-                                    '30 min',
+                                    '30',
                                 onTap: () {
-                                  _prayerSettingsService.setReminderTime(
-                                    '30 min',
-                                  );
+                                  _prayerSettingsService.setReminderTime('30');
                                 },
                               ),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: '40 min',
+                                text: '40',
                                 isSelected:
                                     _prayerSettingsService
                                         .selectedReminderTime ==
-                                    '40 min',
+                                    '40',
                                 onTap: () {
-                                  _prayerSettingsService.setReminderTime(
-                                    '40 min',
-                                  );
+                                  _prayerSettingsService.setReminderTime('40');
                                 },
                               ),
                             ),
@@ -305,7 +296,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                               children: [
                                 Expanded(
                                   child: SelectionButton(
-                                    text: 'Default',
+                                    text: 'sound_default'.tr,
                                     isSelected:
                                         _prayerSettingsService
                                             .selectedAlertSound ==
@@ -320,7 +311,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: SelectionButton(
-                                    text: 'Adhan',
+                                    text: 'sound_adhan'.tr,
                                     isSelected:
                                         _prayerSettingsService
                                             .selectedAlertSound ==
@@ -339,7 +330,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                               children: [
                                 Expanded(
                                   child: SelectionButton(
-                                    text: 'Bell',
+                                    text: 'sound_bell'.tr,
                                     isSelected:
                                         _prayerSettingsService
                                             .selectedAlertSound ==
@@ -354,7 +345,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: SelectionButton(
-                                    text: 'Chime',
+                                    text: 'sound_chime'.tr,
                                     isSelected:
                                         _prayerSettingsService
                                             .selectedAlertSound ==
@@ -406,7 +397,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                           children: [
                             Expanded(
                               child: SelectionButton(
-                                text: 'Small',
+                                text: 'font_size_small'.tr,
                                 isSelected:
                                     _prayerSettingsService.selectedFontSize ==
                                     'Small',
@@ -418,7 +409,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: 'Medium',
+                                text: 'font_size_medium'.tr,
                                 isSelected:
                                     _prayerSettingsService.selectedFontSize ==
                                     'Medium',
@@ -430,7 +421,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: 'Large',
+                                text: 'font_size_large'.tr,
                                 isSelected:
                                     _prayerSettingsService.selectedFontSize ==
                                     'Large',
@@ -485,7 +476,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                           children: [
                             Expanded(
                               child: SelectionButton(
-                                text: 'العربية',
+                                text: 'language_arabic'.tr,
                                 isSelected:
                                     _languageService
                                         .currentLocale
@@ -497,7 +488,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: SelectionButton(
-                                text: 'English',
+                                text: 'language_english'.tr,
                                 isSelected:
                                     _languageService
                                         .currentLocale
@@ -507,6 +498,70 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 12.0,
+                        ),
+                        child: Text(
+                          'selected_country'.tr,
+                          style: _getFontSize() == 14
+                              ? AppFonts.smMedium(
+                                  context,
+                                  color: AppColors.secondery,
+                                )
+                              : _getFontSize() == 16
+                              ? AppFonts.mdMedium(
+                                  context,
+                                  color: AppColors.secondery,
+                                )
+                              : AppFonts.lgMedium(
+                                  context,
+                                  color: AppColors.secondery,
+                                ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 12.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.bgCard,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFFE0E0E0),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            'country_saudi_arabia'.tr,
+                            style: _getFontSize() == 14
+                                ? AppFonts.smRegular(
+                                    context,
+                                    color: AppColors.primary,
+                                  )
+                                : _getFontSize() == 16
+                                ? AppFonts.mdRegular(
+                                    context,
+                                    color: AppColors.primary,
+                                  )
+                                : AppFonts.lgRegular(
+                                    context,
+                                    color: AppColors.primary,
+                                  ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),

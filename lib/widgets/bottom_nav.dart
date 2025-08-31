@@ -63,16 +63,12 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   Widget build(BuildContext context) {
     final bool isRTL = _languageService.isRTL;
 
-    // Define the navigation items in the desired order: Home (index 0), Settings (index 2), Medicine (index 1)
-    // We want the visual order to be: Medicine (left) → Settings (middle) → Home (right)
     final List<Map<String, dynamic>> navItems = [
-      {'index': 1, 'emoji': '💊', 'label': 'medication'.tr}, // Left position
-      {'index': 2, 'emoji': '⚙️', 'label': 'settings'.tr}, // Middle position
-      {'index': 0, 'emoji': '🏠', 'label': 'home'.tr}, // Right position
+      {'index': 1, 'emoji': '💊', 'label': 'medication'.tr},
+      {'index': 2, 'emoji': '⚙️', 'label': 'settings'.tr},
+      {'index': 0, 'emoji': '🏠', 'label': 'home'.tr},
     ];
 
-    // For RTL, we need to reverse the visual order to maintain the same positions
-    // In RTL: Home (right) becomes left, Medicine (left) becomes right
     final List<Map<String, dynamic>> orderedNavItems = isRTL
         ? List.from(navItems.reversed)
         : navItems;

@@ -110,12 +110,16 @@ class _PrayerItemState extends State<PrayerItem> {
               border: widget.isLastItem
                   ? null
                   : const Border(
-                      bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1.0),
+                      bottom: BorderSide(
+                        color: Color.fromARGB(255, 216, 215, 215),
+                        width: 0.5,
+                      ),
                     ),
             ),
             child: Padding(
               padding:
-                  widget.padding ?? const EdgeInsets.symmetric(vertical: 12.0),
+                  widget.padding ??
+                  const EdgeInsets.only(top: 20.0, bottom: 12.0),
               child: Directionality(
                 textDirection: languageService.textDirection,
                 child: Row(

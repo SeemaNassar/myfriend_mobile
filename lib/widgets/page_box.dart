@@ -34,17 +34,7 @@ class BoxWidget extends StatelessWidget {
       margin:
           margin ??
           const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
@@ -54,18 +44,10 @@ class BoxWidget extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  (backgroundColor ?? Colors.white).withOpacity(0.9),
-                  (backgroundEndColor ?? const Color(0xFFF5F5DC)).withOpacity(
-                    0.7,
-                  ),
-                ],
+                colors: [AppColors.bgBox, AppColors.bgBox2],
               ),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1.5,
-              ),
+              border: Border.all(color: AppColors.bgBox, width: 0.5),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +59,7 @@ class BoxWidget extends StatelessWidget {
                       padding:
                           titlePadding ??
                           const EdgeInsets.symmetric(
-                            vertical: 16.0,
+                            vertical: 12.0,
                             horizontal: 20.0,
                           ),
                       child: Directionality(
@@ -85,12 +67,12 @@ class BoxWidget extends StatelessWidget {
                         child: Align(
                           alignment: isRTL
                               ? Alignment.centerRight
-                              : Alignment.centerLeft,
+                              : Alignment.center,
                           child: Text(
                             title.tr,
                             style:
                                 titleStyle ??
-                                AppFonts.xlSemiBold(
+                                AppFonts.lgSemiBold(
                                   context,
                                   color: AppColors.primary,
                                 ),
@@ -100,11 +82,12 @@ class BoxWidget extends StatelessWidget {
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      height: 1,
+                      height: 0.5,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0).withOpacity(0.6),
+                        color: Color.fromARGB(255, 206, 205, 205),
                       ),
                     ),
+                    const SizedBox(height: 8),
                   ],
                 ),
                 Directionality(
