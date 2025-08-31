@@ -181,7 +181,20 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (!isRTL) ...[
-                            const Text('🌙', style: TextStyle(fontSize: 24)),
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  '🌙',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ),
                             const SizedBox(width: 8),
                           ],
                           Text(
@@ -193,7 +206,20 @@ class _HomePageState extends State<HomePage> {
                           ),
                           if (isRTL) ...[
                             const SizedBox(width: 8),
-                            const Text('🌙', style: TextStyle(fontSize: 24)),
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  '🌙',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ),
                           ],
                         ],
                       ),

@@ -75,6 +75,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (!_isInitialized) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: Container(
             color: const Color(0xFFF5F5DC),
@@ -107,7 +108,6 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: const Color(0xFFF5F5DC),
-        fontFamily: 'Roboto',
       ),
       home: const MainScreen(),
       onGenerateRoute: AppRoutes.generateRoute,
