@@ -1,5 +1,7 @@
 // lib/widgets/medication_card.dart
 import 'package:flutter/material.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 import 'package:myfriend_mobile/widgets/custom_timw_picker.dart';
 import '../models/medication.dart';
 import '../services/language_service.dart';
@@ -112,7 +114,7 @@ class _MedicationCardState extends State<MedicationCard>
   void _showTimePicker() {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: AppColors.black.withOpacity(0.4),
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -160,7 +162,7 @@ class _MedicationCardState extends State<MedicationCard>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('please_enter_medicine_name'.tr),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
         ),
       );
     }
@@ -179,8 +181,8 @@ class _MedicationCardState extends State<MedicationCard>
               onChanged: (value) {
                 widget.onToggle(index, value);
               },
-              activeColor: const Color(0xFF4A7C59),
-              inactiveColor: const Color(0xFFE0E0E0),
+              activeColor: AppColors.primary,
+              inactiveColor: AppColors.dividerLine,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -189,19 +191,38 @@ class _MedicationCardState extends State<MedicationCard>
                 children: [
                   Text(
                     medication.name,
-                    style: TextStyle(
-                      fontSize: _getFontSize(),
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF8B4513),
-                    ),
+                    style: _getFontSize() == 14
+                        ? AppFonts.smMedium(
+                            context,
+                            color: AppColors.secondery,
+                          )
+                        : _getFontSize() == 16
+                        ? AppFonts.mdMedium(
+                            context,
+                            color: AppColors.secondery,
+                          )
+                        : AppFonts.lgMedium(
+                            context,
+                            color: AppColors.secondery,
+                          ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     medication.time,
-                    style: TextStyle(
-                      fontSize: _getFontSize() - 2,
-                      color: Colors.grey[600],
-                    ),
+                    style: _getFontSize() == 14
+                        ? AppFonts.xsRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          )
+                        : _getFontSize() == 16
+                        ? AppFonts.smRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          )
+                        : AppFonts.mdRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          ),
                   ),
                 ],
               ),
@@ -212,8 +233,8 @@ class _MedicationCardState extends State<MedicationCard>
               onChanged: (value) {
                 widget.onToggle(index, value);
               },
-              activeColor: const Color(0xFF4A7C59),
-              inactiveColor: const Color(0xFFE0E0E0),
+              activeColor: AppColors.primary,
+              inactiveColor: AppColors.dividerLine,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -222,19 +243,38 @@ class _MedicationCardState extends State<MedicationCard>
                 children: [
                   Text(
                     medication.name,
-                    style: TextStyle(
-                      fontSize: _getFontSize(),
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF8B4513),
-                    ),
+                    style: _getFontSize() == 14
+                        ? AppFonts.smMedium(
+                            context,
+                            color: AppColors.secondery,
+                          )
+                        : _getFontSize() == 16
+                        ? AppFonts.mdMedium(
+                            context,
+                            color: AppColors.secondery,
+                          )
+                        : AppFonts.lgMedium(
+                            context,
+                            color: AppColors.secondery,
+                          ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     medication.time,
-                    style: TextStyle(
-                      fontSize: _getFontSize() - 2,
-                      color: Colors.grey[600],
-                    ),
+                    style: _getFontSize() == 14
+                        ? AppFonts.xsRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          )
+                        : _getFontSize() == 16
+                        ? AppFonts.smRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          )
+                        : AppFonts.mdRegular(
+                            context,
+                            color: AppColors.secondery.withOpacity(0.7),
+                          ),
                   ),
                 ],
               ),
@@ -245,114 +285,96 @@ class _MedicationCardState extends State<MedicationCard>
     );
   }
 
-  Widget _buildAddMedicationForm() {
-    final isRTL = _languageService.isRTL;
+Widget _buildAddMedicationForm() {
+  final isRTL = _languageService.isRTL;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
+  return Container(
+    decoration: BoxDecoration( 
+      border: Border.all(
+        color: AppColors.primary.withOpacity(0.3),
+        width: 1.5,
+      ),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    margin: const EdgeInsets.all(8), 
+    child: Container(
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment:
-            isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          // Medicine name field
+          // Medicine name field - تم إصلاح البوردر
           Container(
             width: double.infinity,
             child: TextField(
               controller: medicineNameController,
               textAlign: isRTL ? TextAlign.right : TextAlign.left,
-              style: TextStyle(fontSize: _getFontSize()),
+              style: _getFontSize() == 14
+                  ? AppFonts.smRegular(context, color: AppColors.primary)
+                  : _getFontSize() == 16
+                  ? AppFonts.mdRegular(context, color: AppColors.primary)
+                  : AppFonts.lgRegular(context, color: AppColors.primary),
               decoration: InputDecoration(
                 hintText: 'medicine_name'.tr,
-                hintStyle: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: _getFontSize(),
-                ),
-                border: OutlineInputBorder(
+                hintStyle: _getFontSize() == 14
+                    ? AppFonts.smRegular(
+                        context,
+                        color: AppColors.secondery.withOpacity(0.5),
+                      )
+                    : _getFontSize() == 16
+                    ? AppFonts.mdRegular(
+                        context,
+                        color: AppColors.secondery.withOpacity(0.5),
+                      )
+                    : AppFonts.lgRegular(
+                        context,
+                        color: AppColors.secondery.withOpacity(0.5),
+                      ),
+                // إصلاح البوردر هنا
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(
+                    color: AppColors.primary.withOpacity(0.3),
+                    width: 1.0,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFF4A7C59)),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Reminder type section
-          Text(
-            'reminder_type'.tr,
-            style: TextStyle(
-              fontSize: _getFontSize(),
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF4A7C59),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: SelectionButton(
-                  text: 'every_x_hours'.tr,
-                  isSelected: selectedReminderType == 'every_x_hours',
-                  onTap: () {
-                    setState(() {
-                      selectedReminderType = 'every_x_hours';
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SelectionButton(
-                  text: 'specific_time'.tr,
-                  isSelected: selectedReminderType == 'specific_time',
-                  onTap: () {
-                    setState(() {
-                      selectedReminderType = 'specific_time';
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Conditional content based on reminder type
-          if (selectedReminderType == 'specific_time') ...[
-            // Time selection
-            GestureDetector(
-              onTap: _showTimePicker,
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _formatTimeOfDay(selectedTime),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: _getFontSize(),
-                    color: Color(0xFF8B4513),
+                  borderSide: BorderSide(
+                    color: AppColors.primary,
+                    width: 1.0,
                   ),
                 ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: AppColors.primary.withOpacity(0.3),
+                    width: 1.0,
+                  ),
+                ),
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
-            const SizedBox(height: 20),
+          ),
+          const SizedBox(height: 20),
 
-            // Times per day section
+            // Reminder type section
             Text(
-              'times_per_day'.tr,
-              style: TextStyle(
-                fontSize: _getFontSize(),
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF4A7C59),
+              'reminder_type'.tr,
+              style: _getFontSize() == 14
+                  ? AppFonts.smSemiBold(
+                context,
+                color: AppColors.primary,
+              )
+                  : _getFontSize() == 16
+                  ? AppFonts.mdSemiBold(
+                context,
+                color: AppColors.primary,
+              )
+                  : AppFonts.lgSemiBold(
+                context,
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 10),
@@ -360,143 +382,236 @@ class _MedicationCardState extends State<MedicationCard>
               children: [
                 Expanded(
                   child: SelectionButton(
-                    text: '4',
-                    isSelected: selectedTimesPerDay == 4,
+                    text: 'every_x_hours'.tr,
+                    isSelected: selectedReminderType == 'every_x_hours',
                     onTap: () {
                       setState(() {
-                        selectedTimesPerDay = 4;
+                        selectedReminderType = 'every_x_hours';
                       });
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: SelectionButton(
-                    text: '3',
-                    isSelected: selectedTimesPerDay == 3,
+                    text: 'specific_time'.tr,
+                    isSelected: selectedReminderType == 'specific_time',
                     onTap: () {
                       setState(() {
-                        selectedTimesPerDay = 3;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SelectionButton(
-                    text: '2',
-                    isSelected: selectedTimesPerDay == 2,
-                    onTap: () {
-                      setState(() {
-                        selectedTimesPerDay = 2;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SelectionButton(
-                    text: '1',
-                    isSelected: selectedTimesPerDay == 1,
-                    onTap: () {
-                      setState(() {
-                        selectedTimesPerDay = 1;
+                        selectedReminderType = 'specific_time';
                       });
                     },
                   ),
                 ),
               ],
             ),
-          ] else ...[
-            // Hours selection for "every X hours"
-            Text(
-              'every_how_many_hours'.tr,
-              style: TextStyle(
-                fontSize: _getFontSize(),
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF4A7C59),
+            const SizedBox(height: 20),
+
+            // Conditional content based on reminder type
+            if (selectedReminderType == 'specific_time') ...[
+              // Time selection
+              GestureDetector(
+                onTap: _showTimePicker,
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _formatTimeOfDay(selectedTime),
+                    textAlign: TextAlign.center,
+                    style: _getFontSize() == 14
+                        ? AppFonts.smRegular(
+                        context,
+                        color: AppColors.secondery,
+                    )
+                        : _getFontSize() == 16
+                        ? AppFonts.mdRegular(
+                        context,
+                        color: AppColors.secondery,
+                    )
+                        : AppFonts.lgRegular(
+                        context,
+                        color: AppColors.secondery,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
+              const SizedBox(height: 20),
+
+              // Times per day section
+              Text(
+                'times_per_day'.tr,
+                style: _getFontSize() == 14
+                    ? AppFonts.smSemiBold(
+                  context,
+                  color: AppColors.primary,
+                )
+                    : _getFontSize() == 16
+                    ? AppFonts.mdSemiBold(
+                  context,
+                  color: AppColors.primary,
+                )
+                    : AppFonts.lgSemiBold(
+                  context,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: SelectionButton(
+                      text: '4',
+                      isSelected: selectedTimesPerDay == 4,
+                      onTap: () {
+                        setState(() {
+                          selectedTimesPerDay = 4;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '3',
+                      isSelected: selectedTimesPerDay == 3,
+                      onTap: () {
+                        setState(() {
+                          selectedTimesPerDay = 3;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '2',
+                      isSelected: selectedTimesPerDay == 2,
+                      onTap: () {
+                        setState(() {
+                          selectedTimesPerDay = 2;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '1',
+                      isSelected: selectedTimesPerDay == 1,
+                      onTap: () {
+                        setState(() {
+                          selectedTimesPerDay = 1;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              // Hours selection for "every X hours"
+              Text(
+                'every_how_many_hours'.tr,
+                style: _getFontSize() == 14
+                    ? AppFonts.smSemiBold(
+                  context,
+                  color: AppColors.primary,
+                )
+                    : _getFontSize() == 16
+                    ? AppFonts.mdSemiBold(
+                  context,
+                  color: AppColors.primary,
+                )
+                    : AppFonts.lgSemiBold(
+                  context,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: SelectionButton(
+                      text: '12',
+                      isSelected: selectedHours == 12,
+                      onTap: () {
+                        setState(() {
+                          selectedHours = 12;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '8',
+                      isSelected: selectedHours == 8,
+                      onTap: () {
+                        setState(() {
+                          selectedHours = 8;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '6',
+                      isSelected: selectedHours == 6,
+                      onTap: () {
+                        setState(() {
+                          selectedHours = 6;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SelectionButton(
+                      text: '4',
+                      isSelected: selectedHours == 4,
+                      onTap: () {
+                        setState(() {
+                          selectedHours = 4;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 30),
+
+            // Action buttons
             Row(
               children: [
                 Expanded(
                   child: SelectionButton(
-                    text: '12',
-                    isSelected: selectedHours == 12,
+                    text: 'cancel'.tr,
+                    isSelected: false,
                     onTap: () {
-                      setState(() {
-                        selectedHours = 12;
-                      });
+                      _toggleExpansion();
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: SelectionButton(
-                    text: '8',
-                    isSelected: selectedHours == 8,
+                    text: 'add'.tr,
+                    isSelected: true,
                     onTap: () {
-                      setState(() {
-                        selectedHours = 8;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SelectionButton(
-                    text: '6',
-                    isSelected: selectedHours == 6,
-                    onTap: () {
-                      setState(() {
-                        selectedHours = 6;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SelectionButton(
-                    text: '4',
-                    isSelected: selectedHours == 4,
-                    onTap: () {
-                      setState(() {
-                        selectedHours = 4;
-                      });
+                      _addMedication();
                     },
                   ),
                 ),
               ],
             ),
           ],
-          const SizedBox(height: 30),
-
-          // Action buttons
-          Row(
-            children: [
-              Expanded(
-                child: SelectionButton(
-                  text: 'cancel'.tr,
-                  isSelected: false,
-                  onTap: () {
-                    _toggleExpansion();
-                  },
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SelectionButton(
-                  text: 'add'.tr,
-                  isSelected: true,
-                  onTap: () {
-                    _addMedication();
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -507,7 +622,7 @@ class _MedicationCardState extends State<MedicationCard>
       child: GestureDetector(
         onTap: _toggleExpansion,
         child: DashedRect(
-          color: Colors.grey[400]!,
+          color: AppColors.primary.withOpacity(0.4),
           strokeWidth: 2,
           gap: 4,
           child: Container(
@@ -516,20 +631,29 @@ class _MedicationCardState extends State<MedicationCard>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.add,
-                  color: Color(0xFF4A7C59),
+                  color: AppColors.primary,
                   size: 20,
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'add_medicine'.tr,
-                  style: TextStyle(
-                    fontSize: _getFontSize(),
-                    color: Color(0xFF4A7C59),
+                  style: _getFontSize() == 14
+                      ? AppFonts.smRegular(
+                      context,
+                      color: AppColors.primary,
+                  )
+                      : _getFontSize() == 16
+                      ? AppFonts.mdRegular(
+                      context,
+                      color: AppColors.primary,
+                  )
+                      : AppFonts.lgRegular(
+                      context,
+                      color: AppColors.primary,
                   ),
                 ),
-
               ],
             ),
           ),
@@ -544,21 +668,31 @@ class _MedicationCardState extends State<MedicationCard>
 
     return BoxWidget(
       title: 'medicine_reminder',
-      backgroundColor: Colors.white,
-      backgroundEndColor: const Color(0xFFF5F5DC),
+      backgroundColor: AppColors.white,
+      backgroundEndColor: AppColors.backgroundEndColor,
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         // Dynamic list of medications or empty state
         if (widget.medications.isEmpty)
           Container(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
             child: Center(
               child: Text(
                 'no_medicines_added'.tr,
-                style: TextStyle(
-                  fontSize: _getFontSize(),
-                  color: Colors.grey[500],
+                style: _getFontSize() == 14
+                    ? AppFonts.smRegular(
+                    context,
+                    color: AppColors.secondery.withOpacity(0.7),
+                )
+                    : _getFontSize() == 16
+                    ? AppFonts.mdRegular(
+                    context,
+                    color: AppColors.secondery.withOpacity(0.7),
+                )
+                    : AppFonts.lgRegular(
+                    context,
+                    color: AppColors.secondery.withOpacity(0.7),
                 ),
               ),
             ),
@@ -575,7 +709,7 @@ class _MedicationCardState extends State<MedicationCard>
                     margin: const EdgeInsets.symmetric(horizontal: 20.0),
                     height: 1,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE0E0E0).withOpacity(0.6),
+                      color: AppColors.dividerLine.withOpacity(0.6),
                     ),
                   ),
               ],
@@ -588,7 +722,7 @@ class _MedicationCardState extends State<MedicationCard>
             margin: const EdgeInsets.symmetric(horizontal: 20.0),
             height: 1,
             decoration: BoxDecoration(
-              color: const Color(0xFFE0E0E0).withOpacity(0.6),
+              color: AppColors.dividerLine.withOpacity(0.6),
             ),
           ),
 

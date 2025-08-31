@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/medicine_service.dart';
 import 'package:myfriend_mobile/widgets/midication_card.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 import '../models/medication.dart';
 import '../services/language_service.dart';
 import '../services/prayer_settings_service.dart';
@@ -81,50 +83,61 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
     return Directionality(
       textDirection: _languageService.textDirection,
       child: Scaffold(
-        backgroundColor: Color(0xFFF5F5DC),
-        appBar: AppBar(
-          backgroundColor: Color(0xFFF5F5DC),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              isRTL ? Icons.arrow_forward : Icons.arrow_back,
-              color: Color(0xFF4A7C59),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Column(
-            children: [
-              SizedBox(height: 5),
-              Text(
-                'settings'.tr,
-                style: TextStyle(
-                  color: Color(0xFF4A7C59),
-                  fontSize: _getFontSize() + 8,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                'medicine_reminder'.tr,
-                style: TextStyle(
-                  color: Color(0xFF8B4513),
-                  fontSize: _getFontSize(),
-                ),
-              ),
-              SizedBox(height: 5),
-            ],
-          ),
-          centerTitle: true,
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Main card with medication reminders and add functionality
-              Expanded(
-                child: SingleChildScrollView(
+        backgroundColor: AppColors.mainBg,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     children: [
+                      Text(
+                        'settings'.tr,
+                        style: _getFontSize() == 14
+                            ? AppFonts.lgBold(
+                                context,
+                                color: AppColors.primary,
+                              )
+                            : _getFontSize() == 16
+                            ? AppFonts.xlBold(
+                                context,
+                                color: AppColors.primary,
+                              )
+                            : AppFonts.xlBold(
+                                context,
+                                color: AppColors.primary,
+                              ).copyWith(fontSize: 22),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'medicine_reminder'.tr,
+                        style: _getFontSize() == 14
+                            ? AppFonts.smRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : _getFontSize() == 16
+                            ? AppFonts.mdRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : AppFonts.lgRegular(
+                                context,
+                                color: AppColors.secondery,
+                              ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Main card with medication reminders and add functionality
                       MedicationCard(
                         medications: medications,
                         onToggle: toggleMedication,
@@ -138,7 +151,7 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                             width: 32,
                             height: 32,
                             decoration: const BoxDecoration(
-                              color: Color(0xFF4A7C59),
+                              color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
                             child: const Center(
@@ -151,21 +164,29 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                           const SizedBox(width: 8),
                           Text(
                             'صديقي',
-                            style: TextStyle(
-                              fontSize: _getFontSize(),
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF4A7C59),
-                            ),
+                            style: _getFontSize() == 14
+                                ? AppFonts.mdSemiBold(
+                                    context,
+                                    color: AppColors.primary,
+                                  )
+                                : _getFontSize() == 16
+                                ? AppFonts.lgSemiBold(
+                                    context,
+                                    color: AppColors.primary,
+                                  )
+                                : AppFonts.xlSemiBold(
+                                    context,
+                                    color: AppColors.primary,
+                                  ),
                           ),
-
                         ],
-                          
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
