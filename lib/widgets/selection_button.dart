@@ -70,22 +70,7 @@ class _SelectionButtonState extends State<SelectionButton> {
         decoration: BoxDecoration(
           color: widget.isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: widget.isSelected
-                ? AppColors.primary
-                : const Color(0xFFE0E0E0),
-            width: 1.5,
-          ),
-          boxShadow: widget.isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : [],
+          border: Border.all(color: AppColors.primary, width: 0.5),
         ),
         child: Center(
           child: Text(
@@ -93,22 +78,16 @@ class _SelectionButtonState extends State<SelectionButton> {
             style: _getFontSize() == 14
                 ? AppFonts.smMedium(
                     context,
-                    color: widget.isSelected
-                        ? Colors.white
-                        : const Color(0xFF666666),
+                    color: widget.isSelected ? Colors.white : AppColors.primary,
                   )
                 : _getFontSize() == 16
                 ? AppFonts.mdMedium(
                     context,
-                    color: widget.isSelected
-                        ? Colors.white
-                        : const Color(0xFF666666),
+                    color: widget.isSelected ? Colors.white : AppColors.primary,
                   )
                 : AppFonts.lgMedium(
                     context,
-                    color: widget.isSelected
-                        ? Colors.white
-                        : const Color(0xFF666666),
+                    color: widget.isSelected ? Colors.white : AppColors.primary,
                   ),
             textAlign: TextAlign.center,
           ),

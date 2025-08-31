@@ -8,7 +8,7 @@
   "alert_sound": "صوت التنبيه",
   "font_size": "حجم الخط",
   "language": "اللغة",
-  "selected_country": "البلد المحدد",
+  "selected_country": "الدولة المحددة",
   "notifications": "الإشعارات",
   "version": "الإصدار",
   "english": "English",
@@ -56,5 +56,20 @@
   "every": "كل",
   "hours": "ساعات",
   "times_daily": "مرات يوميا",
-  "please_enter_medicine_name": "يرجى إدخال اسم الدواء"
+  "please_enter_medicine_name": "يرجى إدخال اسم الدواء",
+  "back":"العودة",
+  "reminder_text_ar": "التذكير بعد {time} دقيقة من الصلاة",
+  "time_format_12_hour": "12 ساعة",
+  "time_format_24_hour": "24 ساعة",
+  "sound_default": "افتراضي",
+  "sound_adhan": "أذان",
+  "sound_bell": "جرس",
+  "sound_chime": "رنين",
+  "font_size_small": "صغير",
+  "font_size_medium": "متوسط",
+  "font_size_large": "كبير",
+  "language_arabic": "العربية",
+  "language_english": "English",
+  "country_saudi_arabia": "المملكة العربية السعودية"
+
 }
