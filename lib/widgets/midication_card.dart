@@ -145,33 +145,27 @@ class _MedicationCardState extends State<MedicationCard>
   }
 
   void _addMedication() {
-    // Prevent adding medication while loading
     if (widget.isLoading) {
       return;
     }
 
     if (medicineNameController.text.isNotEmpty) {
-      String timeDisplay;
+      Medication newMedication;
+      
       if (selectedReminderType == 'every_x_hours') {
-        timeDisplay = 'every'.tr + ' ${selectedHours} ' + 'hours'.tr;
+        newMedication = Medication.createEveryXHours(
+          name: medicineNameController.text,
+          hours: selectedHours,
+          isActive: true,
+        );
       } else {
-        if (selectedTimesPerDay > 1) {
-          timeDisplay =
-              '${_formatTimeOfDay(selectedTime)} (${selectedTimesPerDay} ' +
-                  'times_daily'.tr +
-                  ')';
-        } else {
-          timeDisplay = _formatTimeOfDay(selectedTime);
-        }
+        newMedication = Medication.createSpecificTime(
+          name: medicineNameController.text,
+          time: selectedTime, 
+          timesPerDay: selectedTimesPerDay,
+          isActive: true,
+        );
       }
-
-      Medication newMedication = Medication(
-        name: medicineNameController.text,
-        time: timeDisplay,
-        isActive: true,
-        type: selectedReminderType,
-        hours: selectedHours,
-      );
 
       widget.onAddMedication(newMedication);
       _toggleExpansion();
@@ -195,7 +189,7 @@ class _MedicationCardState extends State<MedicationCard>
           if (isRTL) ...[
             CustomSwitch(
               initialValue: medication.isActive,
-              onChanged: widget.isLoading ? (value) {} : (value) { // Disable when loading
+              onChanged: widget.isLoading ? (value) {} : (value) {
                 widget.onToggle(index, value);
               },
               activeColor: AppColors.primary,
@@ -225,7 +219,7 @@ class _MedicationCardState extends State<MedicationCard>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    medication.time,
+                    medication.getDisplayTime(_languageService),
                     style: _getFontSize() == 14
                         ? AppFonts.xsRegular(
                             context,
@@ -247,7 +241,7 @@ class _MedicationCardState extends State<MedicationCard>
           ] else ...[
             CustomSwitch(
               initialValue: medication.isActive,
-              onChanged: widget.isLoading ? (value) {} : (value) { // Disable when loading
+              onChanged: widget.isLoading ? (value) {} : (value) {
                 widget.onToggle(index, value);
               },
               activeColor: AppColors.primary,
@@ -277,7 +271,7 @@ class _MedicationCardState extends State<MedicationCard>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    medication.time,
+                    medication.getDisplayTime(_languageService), 
                     style: _getFontSize() == 14
                         ? AppFonts.xsRegular(
                             context,
@@ -301,176 +295,90 @@ class _MedicationCardState extends State<MedicationCard>
       ),
     );
   }
+  Widget _buildAddMedicationForm() {
+    final isRTL = _languageService.isRTL;
 
-Widget _buildAddMedicationForm() {
-  final isRTL = _languageService.isRTL;
-
-  return Container(
-    decoration: BoxDecoration( 
-      border: Border.all(
-        color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
-        width: 1.5,
+    return Container(
+      decoration: BoxDecoration( 
+        border: Border.all(
+          color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(8),
       ),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    margin: const EdgeInsets.all(8), 
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment:
-        isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          // Medicine name field
-          Container(
-            width: double.infinity,
-            child: TextField(
-              controller: medicineNameController,
-              enabled: !widget.isLoading, // Disable when loading
-              textAlign: isRTL ? TextAlign.right : TextAlign.left,
-              style: _getFontSize() == 14
-                  ? AppFonts.smRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
-                  : _getFontSize() == 16
-                  ? AppFonts.mdRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
-                  : AppFonts.lgRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0)),
-              decoration: InputDecoration(
-                hintText: 'medicine_name'.tr,
-                hintStyle: _getFontSize() == 14
-                    ? AppFonts.smRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
-                      )
+      margin: const EdgeInsets.all(8), 
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment:
+          isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            // Medicine name field
+            Container(
+              width: double.infinity,
+              child: TextField(
+                controller: medicineNameController,
+                enabled: !widget.isLoading, // Disable when loading
+                textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                style: _getFontSize() == 14
+                    ? AppFonts.smRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
                     : _getFontSize() == 16
-                    ? AppFonts.mdRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
-                      )
-                    : AppFonts.lgRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
-                      ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
-                    width: 1.0,
+                    ? AppFonts.mdRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
+                    : AppFonts.lgRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0)),
+                decoration: InputDecoration(
+                  hintText: 'medicine_name'.tr,
+                  hintStyle: _getFontSize() == 14
+                      ? AppFonts.smRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
+                        )
+                      : _getFontSize() == 16
+                      ? AppFonts.mdRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
+                        )
+                      : AppFonts.lgRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
+                        ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
+                      width: 1.0,
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                    width: 1.0,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                      width: 1.0,
+                    ),
                   ),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(0.2),
-                    width: 1.0,
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(0.2),
+                      width: 1.0,
+                    ),
                   ),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
-                    width: 1.0,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
+                      width: 1.0,
+                    ),
                   ),
+                  contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-            // Reminder type section
-            Text(
-              'reminder_type'.tr,
-              style: _getFontSize() == 14
-                  ? AppFonts.smSemiBold(
-                context,
-                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-              )
-                  : _getFontSize() == 16
-                  ? AppFonts.mdSemiBold(
-                context,
-                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-              )
-                  : AppFonts.lgSemiBold(
-                context,
-                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: SelectionButton(
-                    text: 'every_x_hours'.tr,
-                    isSelected: selectedReminderType == 'every_x_hours',
-                    onTap: widget.isLoading ? () {} : () {
-                      setState(() {
-                        selectedReminderType = 'every_x_hours';
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: SelectionButton(
-                    text: 'specific_time'.tr,
-                    isSelected: selectedReminderType == 'specific_time',
-                    onTap: widget.isLoading ? () {} : () {
-                      setState(() {
-                        selectedReminderType = 'specific_time';
-                      });
-                    },
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 20),
 
-            if (selectedReminderType == 'specific_time') ...[
-              // Time selection
-              GestureDetector(
-                onTap: widget.isLoading ? null : _showTimePicker,
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3)
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: widget.isLoading ? AppColors.primary.withOpacity(0.05) : null,
-                  ),
-                  child: Text(
-                    _formatTimeOfDay(selectedTime),
-                    textAlign: TextAlign.center,
-                    style: _getFontSize() == 14
-                        ? AppFonts.smRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                    )
-                        : _getFontSize() == 16
-                        ? AppFonts.mdRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                    )
-                        : AppFonts.lgRegular(
-                        context,
-                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Times per day section
+              // Reminder type section
               Text(
-                'times_per_day'.tr,
+                'reminder_type'.tr,
                 style: _getFontSize() == 14
                     ? AppFonts.smSemiBold(
                   context,
@@ -491,155 +399,240 @@ Widget _buildAddMedicationForm() {
                 children: [
                   Expanded(
                     child: SelectionButton(
-                      text: '4',
-                      isSelected: selectedTimesPerDay == 4,
+                      text: 'every_x_hours'.tr,
+                      isSelected: selectedReminderType == 'every_x_hours',
                       onTap: widget.isLoading ? () {} : () {
                         setState(() {
-                          selectedTimesPerDay = 4;
+                          selectedReminderType = 'every_x_hours';
                         });
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: SelectionButton(
-                      text: '3',
-                      isSelected: selectedTimesPerDay == 3,
+                      text: 'specific_time'.tr,
+                      isSelected: selectedReminderType == 'specific_time',
                       onTap: widget.isLoading ? () {} : () {
                         setState(() {
-                          selectedTimesPerDay = 3;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SelectionButton(
-                      text: '2',
-                      isSelected: selectedTimesPerDay == 2,
-                      onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedTimesPerDay = 2;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SelectionButton(
-                      text: '1',
-                      isSelected: selectedTimesPerDay == 1,
-                      onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedTimesPerDay = 1;
+                          selectedReminderType = 'specific_time';
                         });
                       },
                     ),
                   ),
                 ],
               ),
-            ] else ...[
-              // Hours selection for "every X hours"
-              Text(
-                'every_how_many_hours'.tr,
-                style: _getFontSize() == 14
-                    ? AppFonts.smSemiBold(
-                  context,
-                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                )
-                    : _getFontSize() == 16
-                    ? AppFonts.mdSemiBold(
-                  context,
-                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
-                )
-                    : AppFonts.lgSemiBold(
-                  context,
-                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+              const SizedBox(height: 20),
+
+              if (selectedReminderType == 'specific_time') ...[
+                // Time selection
+                GestureDetector(
+                  onTap: widget.isLoading ? null : _showTimePicker,
+                  child: Container(
+                    width: double.infinity,
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3)
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: widget.isLoading ? AppColors.primary.withOpacity(0.05) : null,
+                    ),
+                    child: Text(
+                      _formatTimeOfDay(selectedTime),
+                      textAlign: TextAlign.center,
+                      style: _getFontSize() == 14
+                          ? AppFonts.smRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                      )
+                          : _getFontSize() == 16
+                          ? AppFonts.mdRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                      )
+                          : AppFonts.lgRegular(
+                          context,
+                          color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
+                const SizedBox(height: 20),
+
+                // Times per day section
+                Text(
+                  'times_per_day'.tr,
+                  style: _getFontSize() == 14
+                      ? AppFonts.smSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  )
+                      : _getFontSize() == 16
+                      ? AppFonts.mdSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  )
+                      : AppFonts.lgSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectionButton(
+                        text: '4',
+                        isSelected: selectedTimesPerDay == 4,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedTimesPerDay = 4;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '3',
+                        isSelected: selectedTimesPerDay == 3,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedTimesPerDay = 3;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '2',
+                        isSelected: selectedTimesPerDay == 2,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedTimesPerDay = 2;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '1',
+                        isSelected: selectedTimesPerDay == 1,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedTimesPerDay = 1;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                // Hours selection for "every X hours"
+                Text(
+                  'every_how_many_hours'.tr,
+                  style: _getFontSize() == 14
+                      ? AppFonts.smSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  )
+                      : _getFontSize() == 16
+                      ? AppFonts.mdSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  )
+                      : AppFonts.lgSemiBold(
+                    context,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectionButton(
+                        text: '12',
+                        isSelected: selectedHours == 12,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedHours = 12;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '8',
+                        isSelected: selectedHours == 8,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedHours = 8;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '6',
+                        isSelected: selectedHours == 6,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedHours = 6;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectionButton(
+                        text: '4',
+                        isSelected: selectedHours == 4,
+                        onTap: widget.isLoading ? () {} : () {
+                          setState(() {
+                            selectedHours = 4;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 30),
+
               Row(
                 children: [
                   Expanded(
                     child: SelectionButton(
-                      text: '12',
-                      isSelected: selectedHours == 12,
+                      text: 'cancel'.tr,
+                      isSelected: false,
                       onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedHours = 12;
-                        });
+                        _toggleExpansion();
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: SelectionButton(
-                      text: '8',
-                      isSelected: selectedHours == 8,
+                      text: widget.isLoading ? 'adding'.tr : 'add'.tr,
+                      isSelected: true,
                       onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedHours = 8;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SelectionButton(
-                      text: '6',
-                      isSelected: selectedHours == 6,
-                      onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedHours = 6;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SelectionButton(
-                      text: '4',
-                      isSelected: selectedHours == 4,
-                      onTap: widget.isLoading ? () {} : () {
-                        setState(() {
-                          selectedHours = 4;
-                        });
+                        _addMedication();
                       },
                     ),
                   ),
                 ],
               ),
             ],
-            const SizedBox(height: 30),
-
-            Row(
-              children: [
-                Expanded(
-                  child: SelectionButton(
-                    text: 'cancel'.tr,
-                    isSelected: false,
-                    onTap: widget.isLoading ? () {} : () {
-                      _toggleExpansion();
-                    },
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: SelectionButton(
-                    text: widget.isLoading ? 'adding'.tr : 'add'.tr,
-                    isSelected: true,
-                    onTap: widget.isLoading ? () {} : () {
-                      _addMedication();
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildAddMedicationButton() {
     return Container(
