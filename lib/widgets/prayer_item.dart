@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 
-enum PrayerItemShape {
-  normal,
-  bottomBorder,
-}
+enum PrayerItemShape { normal, bottomBorder }
 
-class PrayerItem extends StatelessWidget {
+class PrayerItem extends StatefulWidget {
   final Widget leftWidget;
   final Widget rightWidget;
   final EdgeInsetsGeometry? padding;
@@ -29,38 +29,74 @@ class PrayerItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PrayerItem> createState() => _PrayerItemState();
+}
+
+class _PrayerItemState extends State<PrayerItem> {
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _prayerSettingsService.addListener(_onSettingsChanged);
+  }
+
+  @override
+  void dispose() {
+    _prayerSettingsService.removeListener(_onSettingsChanged);
+    super.dispose();
+  }
+
+  void _onSettingsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final languageService = LanguageService();
     final isRTL = languageService.isRTL;
 
     Widget content = _buildContent(languageService, isRTL);
 
-    if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: content,
-      );
+    if (widget.onTap != null) {
+      return GestureDetector(onTap: widget.onTap, child: content);
     }
 
     return content;
   }
 
   Widget _buildContent(LanguageService languageService, bool isRTL) {
-    switch (shape) {
+    switch (widget.shape) {
       case PrayerItemShape.normal:
         return Padding(
-          padding: padding ??
+          padding:
+              widget.padding ??
               const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
           child: Directionality(
             textDirection: languageService.textDirection,
             child: Row(
               mainAxisAlignment:
-                  mainAxisAlignment ?? MainAxisAlignment.spaceBetween,
+                  widget.mainAxisAlignment ?? MainAxisAlignment.spaceBetween,
               crossAxisAlignment:
-                  crossAxisAlignment ?? CrossAxisAlignment.center,
+                  widget.crossAxisAlignment ?? CrossAxisAlignment.center,
               children: [
-                Flexible(child: leftWidget),
-                rightWidget,
+                Flexible(child: widget.leftWidget),
+                widget.rightWidget,
               ],
             ),
           ),
@@ -71,27 +107,26 @@ class PrayerItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Container(
             decoration: BoxDecoration(
-              border: isLastItem
+              border: widget.isLastItem
                   ? null
                   : const Border(
-                      bottom: BorderSide(
-                        color: Color(0xFFE0E0E0),
-                        width: 1.0,
-                      ),
+                      bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1.0),
                     ),
             ),
             child: Padding(
-              padding: padding ?? const EdgeInsets.symmetric(vertical: 12.0),
+              padding:
+                  widget.padding ?? const EdgeInsets.symmetric(vertical: 12.0),
               child: Directionality(
                 textDirection: languageService.textDirection,
                 child: Row(
                   mainAxisAlignment:
-                      mainAxisAlignment ?? MainAxisAlignment.spaceBetween,
+                      widget.mainAxisAlignment ??
+                      MainAxisAlignment.spaceBetween,
                   crossAxisAlignment:
-                      crossAxisAlignment ?? CrossAxisAlignment.center,
+                      widget.crossAxisAlignment ?? CrossAxisAlignment.center,
                   children: [
-                    Flexible(child: leftWidget),
-                    rightWidget,
+                    Flexible(child: widget.leftWidget),
+                    widget.rightWidget,
                   ],
                 ),
               ),

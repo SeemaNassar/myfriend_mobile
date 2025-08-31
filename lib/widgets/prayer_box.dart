@@ -1,6 +1,9 @@
 //lib\widgets\prayer_box.dart
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 
 class PrayerBox extends StatelessWidget {
   final String prayerName;
@@ -15,6 +18,20 @@ class PrayerBox extends StatelessWidget {
     this.isActive = false,
     this.onTap,
   }) : super(key: key);
+
+  double _getFontSize() {
+    final prayerSettingsService = PrayerSettingsService();
+    switch (prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +51,24 @@ class PrayerBox extends StatelessWidget {
                 ? BorderSide.none
                 : BorderSide(
                     color: isActive
-                        ? const Color(0xFF4A7C59)
+                        ? AppColors.primary
                         : const Color(0xFFE0E0E0),
                     width: isActive ? 4.0 : 1.5,
                   ),
             right: isRTL
                 ? BorderSide(
                     color: isActive
-                        ? const Color(0xFF4A7C59)
+                        ? AppColors.primary
                         : const Color(0xFFE0E0E0),
                     width: isActive ? 4.0 : 1.5,
                   )
                 : BorderSide.none,
             top: BorderSide(
-              color:
-                  isActive ? const Color(0xFF4A7C59) : const Color(0xFFE0E0E0),
+              color: isActive ? AppColors.primary : const Color(0xFFE0E0E0),
               width: 1.5,
             ),
             bottom: BorderSide(
-              color:
-                  isActive ? const Color(0xFF4A7C59) : const Color(0xFFE0E0E0),
+              color: isActive ? AppColors.primary : const Color(0xFFE0E0E0),
               width: 1.5,
             ),
           ),
@@ -74,9 +89,7 @@ class PrayerBox extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? const Color(0xFF4A7C59)
-                      : const Color(0xFFBDBDBD),
+                  color: isActive ? AppColors.primary : const Color(0xFFBDBDBD),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -84,24 +97,50 @@ class PrayerBox extends StatelessWidget {
               Expanded(
                 child: Text(
                   prayerName.tr,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: isActive
-                        ? const Color(0xFF4A7C59)
-                        : const Color(0xFF8B4513),
-                  ),
+                  style: _getFontSize() == 14
+                      ? AppFonts.smMedium(
+                          context,
+                          color: isActive
+                              ? AppColors.primary
+                              : AppColors.secondery,
+                        )
+                      : _getFontSize() == 16
+                      ? AppFonts.mdMedium(
+                          context,
+                          color: isActive
+                              ? AppColors.primary
+                              : AppColors.secondery,
+                        )
+                      : AppFonts.lgMedium(
+                          context,
+                          color: isActive
+                              ? AppColors.primary
+                              : AppColors.secondery,
+                        ),
                 ),
               ),
               Text(
                 time,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: isActive
-                      ? const Color(0xFF4A7C59)
-                      : const Color(0xFF666666),
-                ),
+                style: _getFontSize() == 14
+                    ? AppFonts.smMedium(
+                        context,
+                        color: isActive
+                            ? AppColors.primary
+                            : const Color(0xFF666666),
+                      )
+                    : _getFontSize() == 16
+                    ? AppFonts.mdMedium(
+                        context,
+                        color: isActive
+                            ? AppColors.primary
+                            : const Color(0xFF666666),
+                      )
+                    : AppFonts.lgMedium(
+                        context,
+                        color: isActive
+                            ? AppColors.primary
+                            : const Color(0xFF666666),
+                      ),
               ),
             ],
           ),

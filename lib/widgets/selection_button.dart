@@ -1,7 +1,10 @@
 //lib\widgets\selection_button.dart
 import 'package:flutter/material.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 
-class SelectionButton extends StatelessWidget {
+class SelectionButton extends StatefulWidget {
   final String text;
   final bool isSelected;
   final VoidCallback onTap;
@@ -18,26 +21,65 @@ class SelectionButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SelectionButton> createState() => _SelectionButtonState();
+}
+
+class _SelectionButtonState extends State<SelectionButton> {
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _prayerSettingsService.addListener(_onSettingsChanged);
+  }
+
+  @override
+  void dispose() {
+    _prayerSettingsService.removeListener(_onSettingsChanged);
+    super.dispose();
+  }
+
+  void _onSettingsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: width,
-        height: height ?? 40,
+        width: widget.width,
+        height: widget.height ?? 40,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4A7C59) : Colors.white,
+          color: widget.isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color:
-                isSelected ? const Color(0xFF4A7C59) : const Color(0xFFE0E0E0),
+            color: widget.isSelected
+                ? AppColors.primary
+                : const Color(0xFFE0E0E0),
             width: 1.5,
           ),
-          boxShadow: isSelected
+          boxShadow: widget.isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF4A7C59).withOpacity(0.3),
+                    color: AppColors.primary.withOpacity(0.3),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -47,12 +89,27 @@ class SelectionButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: isSelected ? Colors.white : const Color(0xFF666666),
-            ),
+            widget.text,
+            style: _getFontSize() == 14
+                ? AppFonts.smMedium(
+                    context,
+                    color: widget.isSelected
+                        ? Colors.white
+                        : const Color(0xFF666666),
+                  )
+                : _getFontSize() == 16
+                ? AppFonts.mdMedium(
+                    context,
+                    color: widget.isSelected
+                        ? Colors.white
+                        : const Color(0xFF666666),
+                  )
+                : AppFonts.lgMedium(
+                    context,
+                    color: widget.isSelected
+                        ? Colors.white
+                        : const Color(0xFF666666),
+                  ),
             textAlign: TextAlign.center,
           ),
         ),

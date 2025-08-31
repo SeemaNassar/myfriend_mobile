@@ -1,6 +1,8 @@
 // lib/screens/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 import 'package:myfriend_mobile/widgets/page_box.dart';
 import 'package:myfriend_mobile/widgets/prayer_item.dart';
 import 'package:myfriend_mobile/widgets/prayer_box.dart';
@@ -8,6 +10,7 @@ import 'package:myfriend_mobile/widgets/custom_switch.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
 import 'package:myfriend_mobile/services/prayer_settings_service.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,6 +26,7 @@ class _HomePageState extends State<HomePage> {
   late String currentDate;
   late String currentDay;
   bool isAfterPrayerTimesExpanded = false;
+  Timer? _timer;
 
   final Map<String, String> prayerTimes = {
     'fajr': '06:45',
@@ -39,13 +43,14 @@ class _HomePageState extends State<HomePage> {
     _prayerSettingsService.addListener(_onSettingsChanged);
     _updateTimeAndDate();
 
-    Stream.periodic(const Duration(minutes: 1)).listen((_) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       _updateTimeAndDate();
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _languageService.removeListener(_onLanguageChanged);
     _prayerSettingsService.removeListener(_onSettingsChanged);
     super.dispose();
@@ -91,15 +96,15 @@ class _HomePageState extends State<HomePage> {
 
   String _getArabicDayName(int weekday) {
     const arabicDays = [
-      'السبت',
-      'الأحد',
       'الإثنين',
       'الثلاثاء',
       'الأربعاء',
       'الخميس',
       'الجمعة',
+      'السبت',
+      'الأحد',
     ];
-    return arabicDays[weekday];
+    return arabicDays[weekday - 1];
   }
 
   String _getHijriDateFormatted(DateTime date) {
@@ -142,7 +147,7 @@ class _HomePageState extends State<HomePage> {
     return Directionality(
       textDirection: _languageService.textDirection,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F5DC),
+        backgroundColor: AppColors.mainBg,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -156,46 +161,51 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (!isRTL) ...[
-                            const Text(
-                              '🌙',
-                              style: TextStyle(fontSize: 24),
-                            ),
+                            const Text('🌙', style: TextStyle(fontSize: 24)),
                             const SizedBox(width: 8),
                           ],
-                          const Text(
+                          Text(
                             'صديقي',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF4A7C59),
+                            style: AppFonts.xlSemiBold(
+                              context,
+                              color: AppColors.primary,
                             ),
                           ),
                           if (isRTL) ...[
                             const SizedBox(width: 8),
-                            const Text(
-                              '🌙',
-                              style: TextStyle(fontSize: 24),
-                            ),
+                            const Text('🌙', style: TextStyle(fontSize: 24)),
                           ],
                         ],
                       ),
                       const SizedBox(height: 16),
                       Text(
                         currentTime,
-                        style: TextStyle(
-                          fontSize: _getFontSize() + 24,
-                          fontWeight: FontWeight.w300,
-                          color: const Color(0xFF4A7C59),
-                        ),
+                        style: _getFontSize() == 14
+                            ? AppFonts.h2(context, color: AppColors.primary)
+                            : _getFontSize() == 16
+                            ? AppFonts.h1(context, color: AppColors.primary)
+                            : AppFonts.h1(
+                                context,
+                                color: AppColors.primary,
+                              ).copyWith(fontSize: 42),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '$currentDay، $currentDate',
-                        style: TextStyle(
-                          fontSize: _getFontSize(),
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF8B4513),
-                        ),
+                        style: _getFontSize() == 14
+                            ? AppFonts.smRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : _getFontSize() == 16
+                            ? AppFonts.mdRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : AppFonts.lgRegular(
+                                context,
+                                color: AppColors.secondery,
+                              ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -213,19 +223,37 @@ class _HomePageState extends State<HomePage> {
                       isLastItem: isLast,
                       leftWidget: Text(
                         entry.key.tr,
-                        style: TextStyle(
-                          fontSize: _getFontSize(),
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF8B4513),
-                        ),
+                        style: _getFontSize() == 14
+                            ? AppFonts.smRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : _getFontSize() == 16
+                            ? AppFonts.mdRegular(
+                                context,
+                                color: AppColors.secondery,
+                              )
+                            : AppFonts.lgRegular(
+                                context,
+                                color: AppColors.secondery,
+                              ),
                       ),
                       rightWidget: Text(
                         entry.value,
-                        style: TextStyle(
-                          fontSize: _getFontSize(),
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF4A7C59),
-                        ),
+                        style: _getFontSize() == 14
+                            ? AppFonts.smMedium(
+                                context,
+                                color: AppColors.primary,
+                              )
+                            : _getFontSize() == 16
+                            ? AppFonts.mdMedium(
+                                context,
+                                color: AppColors.primary,
+                              )
+                            : AppFonts.lgMedium(
+                                context,
+                                color: AppColors.primary,
+                              ),
                       ),
                     );
                   }).toList(),
@@ -242,16 +270,26 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Icon(
                                 isRTL ? Icons.arrow_forward : Icons.arrow_back,
-                                color: const Color(0xFF8B4513),
+                                color: AppColors.secondery,
                                 size: 20,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 'back'.tr,
-                                style: TextStyle(
-                                  fontSize: _getFontSize(),
-                                  color: const Color(0xFF8B4513),
-                                ),
+                                style: _getFontSize() == 14
+                                    ? AppFonts.smRegular(
+                                        context,
+                                        color: AppColors.secondery,
+                                      )
+                                    : _getFontSize() == 16
+                                    ? AppFonts.mdRegular(
+                                        context,
+                                        color: AppColors.secondery,
+                                      )
+                                    : AppFonts.lgRegular(
+                                        context,
+                                        color: AppColors.secondery,
+                                      ),
                               ),
                             ],
                           ),
@@ -259,11 +297,20 @@ class _HomePageState extends State<HomePage> {
                         const Spacer(),
                         Text(
                           'after_prayer_times'.tr,
-                          style: TextStyle(
-                            fontSize: _getFontSize() + 2,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4A7C59),
-                          ),
+                          style: _getFontSize() == 14
+                              ? AppFonts.smSemiBold(
+                                  context,
+                                  color: AppColors.primary,
+                                )
+                              : _getFontSize() == 16
+                              ? AppFonts.mdSemiBold(
+                                  context,
+                                  color: AppColors.primary,
+                                )
+                              : AppFonts.lgSemiBold(
+                                  context,
+                                  color: AppColors.primary,
+                                ),
                         ),
                       ],
                     ),
@@ -281,10 +328,7 @@ class _HomePageState extends State<HomePage> {
                       gradient: const LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white,
-                          Color(0xFFF5F5DC),
-                        ],
+                        colors: [AppColors.bgBox, AppColors.bgBox2],
                       ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
@@ -305,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                                 width: 32,
                                 height: 32,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF4A7C59),
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Center(
@@ -319,11 +363,20 @@ class _HomePageState extends State<HomePage> {
                             ],
                             Text(
                               'صديقي',
-                              style: TextStyle(
-                                fontSize: _getFontSize() + 4,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF4A7C59),
-                              ),
+                              style: _getFontSize() == 14
+                                  ? AppFonts.lgSemiBold(
+                                      context,
+                                      color: AppColors.primary,
+                                    )
+                                  : _getFontSize() == 16
+                                  ? AppFonts.xlSemiBold(
+                                      context,
+                                      color: AppColors.primary,
+                                    )
+                                  : AppFonts.xlSemiBold(
+                                      context,
+                                      color: AppColors.primary,
+                                    ).copyWith(fontSize: 22),
                             ),
                             if (isRTL) ...[
                               const SizedBox(width: 8),
@@ -331,7 +384,7 @@ class _HomePageState extends State<HomePage> {
                                 width: 32,
                                 height: 32,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF4A7C59),
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Center(
@@ -349,18 +402,30 @@ class _HomePageState extends State<HomePage> {
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 12.0),
+                              vertical: 8.0,
+                              horizontal: 12.0,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF5F5DC),
+                              color: AppColors.bgCard,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               'reminder_${_prayerSettingsService.selectedReminderTime}'
                                   .tr,
-                              style: TextStyle(
-                                fontSize: _getFontSize() - 2,
-                                color: const Color(0xFF8B4513),
-                              ),
+                              style: _getFontSize() == 14
+                                  ? AppFonts.xsRegular(
+                                      context,
+                                      color: AppColors.secondery,
+                                    )
+                                  : _getFontSize() == 16
+                                  ? AppFonts.smRegular(
+                                      context,
+                                      color: AppColors.secondery,
+                                    )
+                                  : AppFonts.mdRegular(
+                                      context,
+                                      color: AppColors.secondery,
+                                    ),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -388,67 +453,112 @@ class _HomePageState extends State<HomePage> {
                                               initialValue:
                                                   _prayerSettingsService
                                                       .isPrayerEnabled(
-                                                          entry.key),
+                                                        entry.key,
+                                                      ),
                                               onChanged: (value) =>
                                                   _onAfterPrayerSwitchChanged(
-                                                      entry.key, value),
-                                              activeColor:
-                                                  const Color(0xFF4A7C59),
-                                              inactiveColor:
-                                                  const Color(0xFFE0E0E0),
+                                                    entry.key,
+                                                    value,
+                                                  ),
+                                              activeColor: AppColors.primary,
+                                              inactiveColor: const Color(
+                                                0xFFE0E0E0,
+                                              ),
                                             ),
                                             const SizedBox(width: 16),
                                             Text(
                                               prayerName,
-                                              style: TextStyle(
-                                                fontSize: _getFontSize(),
-                                                fontWeight: FontWeight.w400,
-                                                color: const Color(0xFF8B4513),
-                                              ),
+                                              style: _getFontSize() == 14
+                                                  ? AppFonts.smRegular(
+                                                      context,
+                                                      color:
+                                                          AppColors.secondery,
+                                                    )
+                                                  : _getFontSize() == 16
+                                                  ? AppFonts.mdRegular(
+                                                      context,
+                                                      color:
+                                                          AppColors.secondery,
+                                                    )
+                                                  : AppFonts.lgRegular(
+                                                      context,
+                                                      color:
+                                                          AppColors.secondery,
+                                                    ),
                                             ),
                                           ],
                                         )
                                       : Text(
                                           prayerName,
-                                          style: TextStyle(
-                                            fontSize: _getFontSize(),
-                                            fontWeight: FontWeight.w400,
-                                            color: const Color(0xFF8B4513),
-                                          ),
+                                          style: _getFontSize() == 14
+                                              ? AppFonts.smRegular(
+                                                  context,
+                                                  color: AppColors.secondery,
+                                                )
+                                              : _getFontSize() == 16
+                                              ? AppFonts.mdRegular(
+                                                  context,
+                                                  color: AppColors.secondery,
+                                                )
+                                              : AppFonts.lgRegular(
+                                                  context,
+                                                  color: AppColors.secondery,
+                                                ),
                                         ),
                                   rightWidget: isRTL
                                       ? Text(
                                           entry.value,
-                                          style: TextStyle(
-                                            fontSize: _getFontSize(),
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xFF4A7C59),
-                                          ),
+                                          style: _getFontSize() == 14
+                                              ? AppFonts.smMedium(
+                                                  context,
+                                                  color: AppColors.primary,
+                                                )
+                                              : _getFontSize() == 16
+                                              ? AppFonts.mdMedium(
+                                                  context,
+                                                  color: AppColors.primary,
+                                                )
+                                              : AppFonts.lgMedium(
+                                                  context,
+                                                  color: AppColors.primary,
+                                                ),
                                         )
                                       : Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
                                               entry.value,
-                                              style: TextStyle(
-                                                fontSize: _getFontSize(),
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xFF4A7C59),
-                                              ),
+                                              style: _getFontSize() == 14
+                                                  ? AppFonts.smMedium(
+                                                      context,
+                                                      color: AppColors.primary,
+                                                    )
+                                                  : _getFontSize() == 16
+                                                  ? AppFonts.mdMedium(
+                                                      context,
+                                                      color: AppColors.primary,
+                                                    )
+                                                  : AppFonts.lgMedium(
+                                                      context,
+                                                      color: AppColors.primary,
+                                                    ),
                                             ),
                                             const SizedBox(width: 16),
                                             CustomSwitch(
                                               initialValue:
                                                   _prayerSettingsService
                                                       .isPrayerEnabled(
-                                                          entry.key),
+                                                        entry.key,
+                                                      ),
                                               onChanged: (value) =>
                                                   _onAfterPrayerSwitchChanged(
-                                                      entry.key, value),
-                                              activeColor:
-                                                  const Color(0xFF4A7C59),
-                                              inactiveColor:
-                                                  const Color(0xFFE0E0E0),
+                                                    entry.key,
+                                                    value,
+                                                  ),
+                                              activeColor: AppColors.primary,
+                                              inactiveColor: const Color(
+                                                0xFFE0E0E0,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -460,11 +570,20 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 8),
                           Text(
                             'after_prayer_times'.tr,
-                            style: TextStyle(
-                              fontSize: _getFontSize(),
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF8B4513),
-                            ),
+                            style: _getFontSize() == 14
+                                ? AppFonts.smMedium(
+                                    context,
+                                    color: AppColors.secondery,
+                                  )
+                                : _getFontSize() == 16
+                                ? AppFonts.mdMedium(
+                                    context,
+                                    color: AppColors.secondery,
+                                  )
+                                : AppFonts.lgMedium(
+                                    context,
+                                    color: AppColors.secondery,
+                                  ),
                           ),
                         ],
                       ],
