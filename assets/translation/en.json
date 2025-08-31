@@ -76,5 +76,20 @@
   "network_error_check_connection": "Network error. Please check your connection.",
   "failed_to_update_medication_status_try_again": "Failed to update medication status. Please try again.",
   "adding": "Adding",
-  "loading": "Loading"
+  "loading": "Loading",
+  "back":"Back",
+  "reminder_text_en": "Reminder after {time} minutes of prayer",
+  "time_format_12_hour": "12 Hour",
+  "time_format_24_hour": "24 Hour",
+  "sound_default": "Default",
+  "sound_adhan": "Adhan",
+  "sound_bell": "Bell",
+  "sound_chime": "Chime",
+  "font_size_small": "Small",
+  "font_size_medium": "Medium",
+  "font_size_large": "Large",
+  "language_arabic": "العربية",
+  "language_english": "English",
+  "country_saudi_arabia": "Kingdom of Saudi Arabia",
+  "try_app_free_month": "Try the app for the first month for free"
 }

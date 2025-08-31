@@ -20,6 +20,9 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
   final MedicationService _medicationService = MedicationService();
   final LanguageService _languageService = LanguageService();
   final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
+  
+  // Loading state for API calls
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -44,22 +47,104 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
     setState(() {});
   }
 
-  // Load medications from service
+  // Load medications from API server
   Future<void> _loadMedications() async {
-    final loadedMedications = await _medicationService.loadMedications();
     setState(() {
-      medications = loadedMedications;
+      _isLoading = true;
     });
+
+    try {
+      final loadedMedications = await _medicationService.loadMedications();
+      setState(() {
+        medications = loadedMedications;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Show error message to user
+      _showErrorSnackBar('failed_to_load_medications_try_again'.tr);
+    }
   }
 
+  // Add medication with API call
   void addMedication(Medication medication) async {
-    await _medicationService.addMedication(medications, medication);
-    setState(() {}); // Trigger rebuild
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final success = await _medicationService.addMedication(medications, medication);
+      
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        // Medication was added successfully (already added to local list in service)
+        setState(() {}); // Trigger rebuild to show new medication
+        _showSuccessSnackBar('medication_added_successfully_message'.tr);
+      } else {
+        _showErrorSnackBar('failed_to_add_medication_try_again'.tr);
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorSnackBar('network_error_check_connection'.tr);
+    }
   }
 
+  // Toggle medication status with API call
   void toggleMedication(int index, bool value) async {
-    await _medicationService.updateMedicationStatus(medications, index, value);
-    setState(() {}); // Trigger rebuild
+    // Store original value for rollback if needed
+    final originalValue = medications[index].isActive;
+    
+    // Optimistically update UI
+    setState(() {
+      medications[index].isActive = value;
+    });
+
+    try {
+      final success = await _medicationService.updateMedicationStatus(medications, index, value);
+      
+      if (!success) {
+        // Rollback if API call failed
+        setState(() {
+          medications[index].isActive = originalValue;
+        });
+        _showErrorSnackBar('failed_to_update_medication_status_try_again'.tr);
+      }
+    } catch (e) {
+      // Rollback if network error occurred
+      setState(() {
+        medications[index].isActive = originalValue;
+      });
+      _showErrorSnackBar('network_error_check_connection'.tr);
+    }
+  }
+
+  // Show error message to user
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.red,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // Show success message to user
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.primary,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   double _getFontSize() {
@@ -137,12 +222,23 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                   padding: EdgeInsets.all(16.0),
                   child: Column(
                     children: [
+                      // Show loading indicator while API calls are in progress
+                      if (_isLoading)
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      
                       // Main card with medication reminders and add functionality
                       MedicationCard(
                         medications: medications,
                         onToggle: toggleMedication,
                         onAddMedication: addMedication,
+                        isLoading: _isLoading, // Pass loading state to card
                       ),
+                      
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

@@ -15,12 +15,14 @@ class MedicationCard extends StatefulWidget {
   final List<Medication> medications;
   final Function(int, bool) onToggle;
   final Function(Medication) onAddMedication;
+  final bool isLoading; 
 
   const MedicationCard({
     Key? key,
     required this.medications,
     required this.onToggle,
     required this.onAddMedication,
+    this.isLoading = false, 
   }) : super(key: key);
 
   @override
@@ -87,6 +89,11 @@ class _MedicationCardState extends State<MedicationCard>
   }
 
   void _toggleExpansion() {
+    // Prevent toggling while loading
+    if (widget.isLoading) {
+      return;
+    }
+
     setState(() {
       _isExpanded = !_isExpanded;
       if (_isExpanded) {
@@ -112,6 +119,11 @@ class _MedicationCardState extends State<MedicationCard>
   }
 
   void _showTimePicker() {
+    // Prevent showing time picker while loading
+    if (widget.isLoading) {
+      return;
+    }
+
     showDialog(
       context: context,
       barrierColor: AppColors.black.withOpacity(0.4),
@@ -133,6 +145,11 @@ class _MedicationCardState extends State<MedicationCard>
   }
 
   void _addMedication() {
+    // Prevent adding medication while loading
+    if (widget.isLoading) {
+      return;
+    }
+
     if (medicineNameController.text.isNotEmpty) {
       String timeDisplay;
       if (selectedReminderType == 'every_x_hours') {
@@ -178,7 +195,7 @@ class _MedicationCardState extends State<MedicationCard>
           if (isRTL) ...[
             CustomSwitch(
               initialValue: medication.isActive,
-              onChanged: (value) {
+              onChanged: widget.isLoading ? (value) {} : (value) { // Disable when loading
                 widget.onToggle(index, value);
               },
               activeColor: AppColors.primary,
@@ -194,16 +211,16 @@ class _MedicationCardState extends State<MedicationCard>
                     style: _getFontSize() == 14
                         ? AppFonts.smMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           )
                         : _getFontSize() == 16
                         ? AppFonts.mdMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           )
                         : AppFonts.lgMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           ),
                   ),
                   const SizedBox(height: 4),
@@ -212,16 +229,16 @@ class _MedicationCardState extends State<MedicationCard>
                     style: _getFontSize() == 14
                         ? AppFonts.xsRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           )
                         : _getFontSize() == 16
                         ? AppFonts.smRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           )
                         : AppFonts.mdRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           ),
                   ),
                 ],
@@ -230,7 +247,7 @@ class _MedicationCardState extends State<MedicationCard>
           ] else ...[
             CustomSwitch(
               initialValue: medication.isActive,
-              onChanged: (value) {
+              onChanged: widget.isLoading ? (value) {} : (value) { // Disable when loading
                 widget.onToggle(index, value);
               },
               activeColor: AppColors.primary,
@@ -246,16 +263,16 @@ class _MedicationCardState extends State<MedicationCard>
                     style: _getFontSize() == 14
                         ? AppFonts.smMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           )
                         : _getFontSize() == 16
                         ? AppFonts.mdMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           )
                         : AppFonts.lgMedium(
                             context,
-                            color: AppColors.secondery,
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                           ),
                   ),
                   const SizedBox(height: 4),
@@ -264,16 +281,16 @@ class _MedicationCardState extends State<MedicationCard>
                     style: _getFontSize() == 14
                         ? AppFonts.xsRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           )
                         : _getFontSize() == 16
                         ? AppFonts.smRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           )
                         : AppFonts.mdRegular(
                             context,
-                            color: AppColors.secondery.withOpacity(0.7),
+                            color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.7),
                           ),
                   ),
                 ],
@@ -291,7 +308,7 @@ Widget _buildAddMedicationForm() {
   return Container(
     decoration: BoxDecoration( 
       border: Border.all(
-        color: AppColors.primary.withOpacity(0.3),
+        color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
         width: 1.5,
       ),
       borderRadius: BorderRadius.circular(8),
@@ -303,52 +320,59 @@ Widget _buildAddMedicationForm() {
         crossAxisAlignment:
         isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          // Medicine name field - تم إصلاح البوردر
+          // Medicine name field
           Container(
             width: double.infinity,
             child: TextField(
               controller: medicineNameController,
+              enabled: !widget.isLoading, // Disable when loading
               textAlign: isRTL ? TextAlign.right : TextAlign.left,
               style: _getFontSize() == 14
-                  ? AppFonts.smRegular(context, color: AppColors.primary)
+                  ? AppFonts.smRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
                   : _getFontSize() == 16
-                  ? AppFonts.mdRegular(context, color: AppColors.primary)
-                  : AppFonts.lgRegular(context, color: AppColors.primary),
+                  ? AppFonts.mdRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0))
+                  : AppFonts.lgRegular(context, color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0)),
               decoration: InputDecoration(
                 hintText: 'medicine_name'.tr,
                 hintStyle: _getFontSize() == 14
                     ? AppFonts.smRegular(
                         context,
-                        color: AppColors.secondery.withOpacity(0.5),
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
                       )
                     : _getFontSize() == 16
                     ? AppFonts.mdRegular(
                         context,
-                        color: AppColors.secondery.withOpacity(0.5),
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
                       )
                     : AppFonts.lgRegular(
                         context,
-                        color: AppColors.secondery.withOpacity(0.5),
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.3 : 0.5),
                       ),
-                // إصلاح البوردر هنا
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
                     width: 1.0,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.primary,
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
+                    width: 1.0,
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: AppColors.primary.withOpacity(0.2),
                     width: 1.0,
                   ),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3),
                     width: 1.0,
                   ),
                 ),
@@ -365,16 +389,16 @@ Widget _buildAddMedicationForm() {
               style: _getFontSize() == 14
                   ? AppFonts.smSemiBold(
                 context,
-                color: AppColors.primary,
+                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
               )
                   : _getFontSize() == 16
                   ? AppFonts.mdSemiBold(
                 context,
-                color: AppColors.primary,
+                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
               )
                   : AppFonts.lgSemiBold(
                 context,
-                color: AppColors.primary,
+                color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
               ),
             ),
             const SizedBox(height: 10),
@@ -384,7 +408,7 @@ Widget _buildAddMedicationForm() {
                   child: SelectionButton(
                     text: 'every_x_hours'.tr,
                     isSelected: selectedReminderType == 'every_x_hours',
-                    onTap: () {
+                    onTap: widget.isLoading ? () {} : () {
                       setState(() {
                         selectedReminderType = 'every_x_hours';
                       });
@@ -396,7 +420,7 @@ Widget _buildAddMedicationForm() {
                   child: SelectionButton(
                     text: 'specific_time'.tr,
                     isSelected: selectedReminderType == 'specific_time',
-                    onTap: () {
+                    onTap: widget.isLoading ? () {} : () {
                       setState(() {
                         selectedReminderType = 'specific_time';
                       });
@@ -407,18 +431,20 @@ Widget _buildAddMedicationForm() {
             ),
             const SizedBox(height: 20),
 
-            // Conditional content based on reminder type
             if (selectedReminderType == 'specific_time') ...[
               // Time selection
               GestureDetector(
-                onTap: _showTimePicker,
+                onTap: widget.isLoading ? null : _showTimePicker,
                 child: Container(
                   width: double.infinity,
                   padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.3)
+                    ),
                     borderRadius: BorderRadius.circular(8),
+                    color: widget.isLoading ? AppColors.primary.withOpacity(0.05) : null,
                   ),
                   child: Text(
                     _formatTimeOfDay(selectedTime),
@@ -426,16 +452,16 @@ Widget _buildAddMedicationForm() {
                     style: _getFontSize() == 14
                         ? AppFonts.smRegular(
                         context,
-                        color: AppColors.secondery,
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                     )
                         : _getFontSize() == 16
                         ? AppFonts.mdRegular(
                         context,
-                        color: AppColors.secondery,
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                     )
                         : AppFonts.lgRegular(
                         context,
-                        color: AppColors.secondery,
+                        color: AppColors.secondery.withOpacity(widget.isLoading ? 0.5 : 1.0),
                     ),
                   ),
                 ),
@@ -448,16 +474,16 @@ Widget _buildAddMedicationForm() {
                 style: _getFontSize() == 14
                     ? AppFonts.smSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 )
                     : _getFontSize() == 16
                     ? AppFonts.mdSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 )
                     : AppFonts.lgSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 ),
               ),
               const SizedBox(height: 10),
@@ -467,7 +493,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '4',
                       isSelected: selectedTimesPerDay == 4,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedTimesPerDay = 4;
                         });
@@ -479,7 +505,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '3',
                       isSelected: selectedTimesPerDay == 3,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedTimesPerDay = 3;
                         });
@@ -491,7 +517,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '2',
                       isSelected: selectedTimesPerDay == 2,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedTimesPerDay = 2;
                         });
@@ -503,7 +529,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '1',
                       isSelected: selectedTimesPerDay == 1,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedTimesPerDay = 1;
                         });
@@ -519,16 +545,16 @@ Widget _buildAddMedicationForm() {
                 style: _getFontSize() == 14
                     ? AppFonts.smSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 )
                     : _getFontSize() == 16
                     ? AppFonts.mdSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 )
                     : AppFonts.lgSemiBold(
                   context,
-                  color: AppColors.primary,
+                  color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                 ),
               ),
               const SizedBox(height: 10),
@@ -538,7 +564,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '12',
                       isSelected: selectedHours == 12,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedHours = 12;
                         });
@@ -550,7 +576,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '8',
                       isSelected: selectedHours == 8,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedHours = 8;
                         });
@@ -562,7 +588,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '6',
                       isSelected: selectedHours == 6,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedHours = 6;
                         });
@@ -574,7 +600,7 @@ Widget _buildAddMedicationForm() {
                     child: SelectionButton(
                       text: '4',
                       isSelected: selectedHours == 4,
-                      onTap: () {
+                      onTap: widget.isLoading ? () {} : () {
                         setState(() {
                           selectedHours = 4;
                         });
@@ -586,14 +612,13 @@ Widget _buildAddMedicationForm() {
             ],
             const SizedBox(height: 30),
 
-            // Action buttons
             Row(
               children: [
                 Expanded(
                   child: SelectionButton(
                     text: 'cancel'.tr,
                     isSelected: false,
-                    onTap: () {
+                    onTap: widget.isLoading ? () {} : () {
                       _toggleExpansion();
                     },
                   ),
@@ -601,9 +626,9 @@ Widget _buildAddMedicationForm() {
                 const SizedBox(width: 10),
                 Expanded(
                   child: SelectionButton(
-                    text: 'add'.tr,
+                    text: widget.isLoading ? 'adding'.tr : 'add'.tr,
                     isSelected: true,
-                    onTap: () {
+                    onTap: widget.isLoading ? () {} : () {
                       _addMedication();
                     },
                   ),
@@ -620,9 +645,9 @@ Widget _buildAddMedicationForm() {
     return Container(
       padding: const EdgeInsets.all(20),
       child: GestureDetector(
-        onTap: _toggleExpansion,
+        onTap: widget.isLoading ? null : _toggleExpansion, // Disable when loading
         child: DashedRect(
-          color: AppColors.primary.withOpacity(0.4),
+          color: AppColors.primary.withOpacity(widget.isLoading ? 0.2 : 0.4), 
           strokeWidth: 2,
           gap: 4,
           child: Container(
@@ -631,27 +656,37 @@ Widget _buildAddMedicationForm() {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.add,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
+                if (widget.isLoading) 
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.add,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                 const SizedBox(width: 10),
                 Text(
-                  'add_medicine'.tr,
+                  widget.isLoading ? 'loading'.tr : 'add_medicine'.tr,
                   style: _getFontSize() == 14
                       ? AppFonts.smRegular(
                       context,
-                      color: AppColors.primary,
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                   )
                       : _getFontSize() == 16
                       ? AppFonts.mdRegular(
                       context,
-                      color: AppColors.primary,
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                   )
                       : AppFonts.lgRegular(
                       context,
-                      color: AppColors.primary,
+                      color: AppColors.primary.withOpacity(widget.isLoading ? 0.5 : 1.0),
                   ),
                 ),
               ],
@@ -673,7 +708,7 @@ Widget _buildAddMedicationForm() {
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         // Dynamic list of medications or empty state
-        if (widget.medications.isEmpty)
+        if (widget.medications.isEmpty && !widget.isLoading)
           Container(
             padding:
             const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
@@ -697,7 +732,7 @@ Widget _buildAddMedicationForm() {
               ),
             ),
           )
-        else
+        else if (widget.medications.isNotEmpty)
           ...widget.medications.asMap().entries.map((entry) {
             int index = entry.key;
             Medication medication = entry.value;
