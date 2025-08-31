@@ -2,6 +2,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 
 class BoxWidget extends StatelessWidget {
   final String title;
@@ -29,7 +31,8 @@ class BoxWidget extends StatelessWidget {
     final isRTL = languageService.isRTL;
 
     return Container(
-      margin: margin ??
+      margin:
+          margin ??
           const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -53,8 +56,9 @@ class BoxWidget extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   (backgroundColor ?? Colors.white).withOpacity(0.9),
-                  (backgroundEndColor ?? const Color(0xFFF5F5DC))
-                      .withOpacity(0.7),
+                  (backgroundEndColor ?? const Color(0xFFF5F5DC)).withOpacity(
+                    0.7,
+                  ),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
@@ -70,9 +74,12 @@ class BoxWidget extends StatelessWidget {
                   children: [
                     Container(
                       width: double.infinity,
-                      padding: titlePadding ??
+                      padding:
+                          titlePadding ??
                           const EdgeInsets.symmetric(
-                              vertical: 16.0, horizontal: 20.0),
+                            vertical: 16.0,
+                            horizontal: 20.0,
+                          ),
                       child: Directionality(
                         textDirection: languageService.textDirection,
                         child: Align(
@@ -81,11 +88,11 @@ class BoxWidget extends StatelessWidget {
                               : Alignment.centerLeft,
                           child: Text(
                             title.tr,
-                            style: titleStyle ??
-                                const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF4A7C59),
+                            style:
+                                titleStyle ??
+                                AppFonts.xlSemiBold(
+                                  context,
+                                  color: AppColors.primary,
                                 ),
                           ),
                         ),
@@ -102,9 +109,7 @@ class BoxWidget extends StatelessWidget {
                 ),
                 Directionality(
                   textDirection: languageService.textDirection,
-                  child: Column(
-                    children: children,
-                  ),
+                  child: Column(children: children),
                 ),
                 const SizedBox(height: 16),
               ],

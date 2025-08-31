@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myfriend_mobile/services/language_service.dart';
+import 'package:myfriend_mobile/services/prayer_settings_service.dart';
+import 'package:myfriend_mobile/utils/app_font.dart';
+import 'package:myfriend_mobile/utils/colors.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int currentIndex;
@@ -17,21 +20,43 @@ class CustomBottomNavBar extends StatefulWidget {
 
 class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   final LanguageService _languageService = LanguageService();
+  final PrayerSettingsService _prayerSettingsService = PrayerSettingsService();
 
   @override
   void initState() {
     super.initState();
     _languageService.addListener(_onLanguageChanged);
+    _prayerSettingsService.addListener(_onSettingsChanged);
   }
 
   @override
   void dispose() {
     _languageService.removeListener(_onLanguageChanged);
+    _prayerSettingsService.removeListener(_onSettingsChanged);
     super.dispose();
   }
 
   void _onLanguageChanged() {
     setState(() {});
+  }
+
+  void _onSettingsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  double _getFontSize() {
+    switch (_prayerSettingsService.selectedFontSize) {
+      case 'Small':
+        return 14;
+      case 'Medium':
+        return 16;
+      case 'Large':
+        return 18;
+      default:
+        return 16;
+    }
   }
 
   @override
@@ -48,8 +73,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
     // For RTL, we need to reverse the visual order to maintain the same positions
     // In RTL: Home (right) becomes left, Medicine (left) becomes right
-    final List<Map<String, dynamic>> orderedNavItems =
-        isRTL ? List.from(navItems.reversed) : navItems;
+    final List<Map<String, dynamic>> orderedNavItems = isRTL
+        ? List.from(navItems.reversed)
+        : navItems;
 
     return Container(
       height: 75 + MediaQuery.of(context).padding.bottom,
@@ -94,24 +120,30 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         child: Container(
           height: 75,
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF4A7C59) : Colors.transparent,
+            color: isActive ? AppColors.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                emoji,
-                style: const TextStyle(fontSize: 24),
-              ),
+              Text(emoji, style: const TextStyle(fontSize: 24)),
               const SizedBox(height: 4),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: isActive ? Colors.white : const Color(0xFF8B4513),
-                ),
+                style: _getFontSize() == 14
+                    ? AppFonts.xsMedium(
+                        context,
+                        color: isActive ? Colors.white : AppColors.secondery,
+                      )
+                    : _getFontSize() == 16
+                    ? AppFonts.smMedium(
+                        context,
+                        color: isActive ? Colors.white : AppColors.secondery,
+                      )
+                    : AppFonts.mdMedium(
+                        context,
+                        color: isActive ? Colors.white : AppColors.secondery,
+                      ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
